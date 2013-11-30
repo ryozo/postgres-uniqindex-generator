@@ -6,7 +6,7 @@ import uidxgenerator.constants.SqlType;
 import uidxgenerator.util.StringUtil;
 
 /**
- * SQL文を表すクラスです。
+ * SQL文を表すEntityです。
  * @author W.Ryozo
  * @version 1.0
  */
@@ -16,9 +16,6 @@ public class SqlCommand implements Serializable {
 	
 	/** SQL本文 */
 	private String command;
-	
-	/** SQL種別 */
-	private SqlType type;
 	
 	/**
 	 * SQL文とSQL種別を利用してインスタンスを作成します。
@@ -31,7 +28,6 @@ public class SqlCommand implements Serializable {
 			throw new IllegalArgumentException();
 		}
 		this.command = command;
-		this.type = SqlType.CREATETABLE;
 	}
 	
 	/**
@@ -41,13 +37,9 @@ public class SqlCommand implements Serializable {
 	public String getSqlCommand() {
 		return command;
 	}
-	
-	/**
-	 * SQL種別を取得します。
-	 * @return
-	 */
-	public SqlType getType() {
-		return type;
-	}
 
+	@Override
+	public String toString() {
+		return command;
+	}
 }
