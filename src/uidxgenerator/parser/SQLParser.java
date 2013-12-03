@@ -46,6 +46,11 @@ public class SQLParser {
 
 	}
 	
+	/**
+	 * ˆø”‚Éó‚¯æ‚Á‚½SQL‚ğŒ³‚ÉSqlCommand‚ğì¬‚µ‚Ü‚·B
+	 * @param sql ‘ÎÛ‚ÌSQL
+	 * @return ì¬‚µ‚½SQLCommand
+	 */
 	private SqlCommand buildSqlCommand(String sql) {
 		if (StringUtil.isNullOrEmpty(sql)) {
 			throw new IllegalArgumentException("SQL is null or empty");

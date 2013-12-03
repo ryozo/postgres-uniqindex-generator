@@ -2,7 +2,6 @@ package uidxgenerator.entity;
 
 import java.io.Serializable;
 
-import uidxgenerator.constants.SqlType;
 import uidxgenerator.util.StringUtil;
 
 /**

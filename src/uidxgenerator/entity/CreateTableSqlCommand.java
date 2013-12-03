@@ -63,6 +63,7 @@ public class CreateTableSqlCommand extends SqlCommand {
 			}
 		}
 		
+		// TODO command‚Ì’u‚«Š·‚¦B
 	}
 
 }
