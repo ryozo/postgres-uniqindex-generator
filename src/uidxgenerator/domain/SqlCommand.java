@@ -1,11 +1,11 @@
-package uidxgenerator.entity;
+package uidxgenerator.domain;
 
 import java.io.Serializable;
 
 import uidxgenerator.util.StringUtil;
 
 /**
- * SQL文を表すEntityです。
+ * SQL文を表すDomainです。
  * @author W.Ryozo
  * @version 1.0
  */
@@ -22,9 +22,8 @@ public class SqlCommand implements Serializable {
 	 * @param type SQLの種別
 	 */
 	public SqlCommand(String command) {
-		// TODO Builderクラスを検討、あと内容修正
 		if (StringUtil.isNullOrEmpty(command)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("sql is empty");
 		}
 		this.command = command;
 	}

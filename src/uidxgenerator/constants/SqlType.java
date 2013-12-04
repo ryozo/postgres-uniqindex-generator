@@ -2,6 +2,7 @@ package uidxgenerator.constants;
 
 /**
  * SQL‚Ìí•Ê‚ğ•\‚·—ñ‹“q‚Å‚·
+ * TODO íœ‚ğŒŸ“¢
  * @author W.Ryozo
  * @version 1.0
  */

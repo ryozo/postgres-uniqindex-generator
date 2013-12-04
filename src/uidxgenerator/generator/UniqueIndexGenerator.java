@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
-import uidxgenerator.entity.EntireSQL;
+import uidxgenerator.domain.CreateTableSqlCommand;
+import uidxgenerator.domain.EntireSQL;
+import uidxgenerator.domain.SqlCommand;
 import uidxgenerator.parser.SQLParser;
-import uidxgenerator.validator.FileValidator;
 
 /**
  * UniqueIndexのGeneratorです。
@@ -16,6 +18,34 @@ import uidxgenerator.validator.FileValidator;
  * @version 1.0
  */
 public class UniqueIndexGenerator {
+	
+	// TODO javadoc
+	public String generate(String sqlFilePath, 
+			String fileEncoding, 
+			String indexConditionField, 
+			Boolean indexConditionValue) throws Exception {
+		if (sqlFilePath == null) {
+			throw new IllegalArgumentException("対象SQLファイルのパスが指定されていませんです");
+		}
+		File file = new File(sqlFilePath);
+		if (!file.isFile()) {
+			throw new IllegalArgumentException("対象SQLファイルが存在しません");
+		}
+
+		// TODO 引数のValidate
+		String sql = readSqlFile(file, fileEncoding);		
+		SQLParser sqlParser = new SQLParser();
+		EntireSQL entireSql = sqlParser.parse(sql);
+		
+		List<SqlCommand> sqlCommandList = entireSql.getSqlCommandList();
+		for (SqlCommand command : sqlCommandList) {
+			if (command instanceof CreateTableSqlCommand) {
+				
+			}
+		}
+
+		return null;
+	}
 	
 	/**
 	 * TODO 詳細に記述。
@@ -26,24 +56,45 @@ public class UniqueIndexGenerator {
 	 */
 	// TODO throws Exceptionを修正
 	public String generate(String sqlFilePath, String fileEncoding, String... indexConditionFields) throws Exception {
-		FileValidator.validateFile(sqlFilePath);
+		// Validate
+		if (sqlFilePath == null) {
+			throw new IllegalArgumentException("対象SQLファイルのパスが指定されていませんです");
+		}
+		File file = new File(sqlFilePath);
+		if (!file.isFile()) {
+			throw new IllegalArgumentException("対象SQLファイルが存在しません");
+		}
+		
 		if (indexConditionFields == null 
 				|| indexConditionFields.length == 0) {
 			// TODO ファイル変更不要
 		}
 		
+		String sql = readSqlFile(file, fileEncoding);
+		SQLParser sqlParser = new SQLParser();
+		EntireSQL entireSql = sqlParser.parse(sql);
+		
+		
+		return null;
+	}
+	
+	/**
+	 * SQLファイルを読み込みます。
+	 * @param sqlFile 読み込み対象のSQLファイル
+	 * @param encoding SQLファイルの文字コード
+	 * @return 読み込んだSQLファイル（改行コード含む）
+	 */
+	private String readSqlFile(File sqlFile, String encoding) throws IOException {
 		BufferedReader reader = null;
-		String sqlFileContents = null;
+		StringBuilder builder = new StringBuilder();
 		try {
 			reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(new File(sqlFilePath)),fileEncoding));
-			StringBuilder builder = new StringBuilder();
+					new FileInputStream(sqlFile), encoding));
+			builder = new StringBuilder();
 			int c;
 			while ((c = reader.read()) != -1) {
 				builder.append((char) c);
 			}
-			
-			sqlFileContents = builder.toString();
 			
 		} catch (IOException e) {
 			throw e;
@@ -51,16 +102,12 @@ public class UniqueIndexGenerator {
 			if (reader != null) {
 				try {
 					reader.close();
-				} catch (Exception e) {
+				} catch (IOException e) {
 					throw e;
 				}
 			}
 		}
 		
-		SQLParser sqlParser = new SQLParser();
-		EntireSQL entireSql = sqlParser.parse(sqlFileContents);
-		
-		
-		return null;
+		return builder.toString();
 	}
 }

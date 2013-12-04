@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import uidxgenerator.entity.SqlCommand;
+import uidxgenerator.domain.SqlCommand;
 import uidxgenerator.util.StringUtil;
 
 /**

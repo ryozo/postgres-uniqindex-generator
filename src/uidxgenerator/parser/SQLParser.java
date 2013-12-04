@@ -9,9 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import uidxgenerator.entity.CreateTableSqlCommand;
-import uidxgenerator.entity.EntireSQL;
-import uidxgenerator.entity.SqlCommand;
+import uidxgenerator.domain.CreateTableSqlCommand;
+import uidxgenerator.domain.EntireSQL;
+import uidxgenerator.domain.SqlCommand;
 import uidxgenerator.util.StringUtil;
 
 /**
@@ -22,7 +22,7 @@ import uidxgenerator.util.StringUtil;
 public class SQLParser {
 	
 	/** Create Table文の接頭辞 */
-	private static final String CREATE_TABLE_PREFIX = "CREATE TABLE";
+	private static final String CREATE_TABLE_PREFIX = "CREATE TABLE ";
 	
 	/** SQL文の区切り文字　*/
 	private static final String SQL_COMMAND_DELIMITER = ";";
@@ -100,8 +100,6 @@ public class SQLParser {
 				noCommentSqlBuilder.append(line);
 			}
 			
-			System.out.println(noCommentSqlBuilder.toString());
-			
 		} catch (IOException ioe) {
 			// TODO 例外処理
 			throw new RuntimeException(ioe);
@@ -115,10 +113,15 @@ public class SQLParser {
 			}
 		}
 
-		String noCommentSql = noCommentSqlBuilder.toString();
+		String noCommentSql = noCommentSqlBuilder.toString().trim();
 		List<Set<String>> uniqueKeyList = new ArrayList<Set<String>>();
 
 		if (noCommentSql.toUpperCase().startsWith(CREATE_TABLE_PREFIX)) {
+			// Table名を取得する
+			int fromIndex = noCommentSql.indexOf(CREATE_TABLE_PREFIX) + CREATE_TABLE_PREFIX.length();
+			int toIndex = noCommentSql.indexOf(" ", CREATE_TABLE_PREFIX.length());
+			String tableName = noCommentSql.substring(fromIndex, toIndex);
+			
 			String fieldDefinition = noCommentSql.substring(noCommentSql.indexOf("(") + 1);
 			// Field毎に分離する。ただし、この時点では末尾にField以外の情報を含んでいる状態。
 			String[] fields = fieldDefinition.split(",");
@@ -171,7 +174,7 @@ public class SQLParser {
 			}
 			
 			// SqlCommandを作成
-			sqlCommand = new CreateTableSqlCommand(sql, uniqueKeyList);
+			sqlCommand = new CreateTableSqlCommand(sql, tableName, uniqueKeyList);
 		} else {
 			sqlCommand = new SqlCommand(sql);
 		}

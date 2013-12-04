@@ -1,21 +1,22 @@
-package uidxgenerator.entity;
+package uidxgenerator.domain;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Set;
 
 /**
- * CreateTable文を表すEntityです。
+ * CreateTable文を表すDomainです。
  * @author W.Ryozo
  * @version 1.0
  */
 public class CreateTableSqlCommand extends SqlCommand {
 
 	private static final long serialVersionUID = 1L;
+	
+	/** 作成対象のテーブル名 */
+	private String createTableName;
 	
 	/**
 	 * Unique制約付与対象の項目一覧。<br />
@@ -25,9 +26,25 @@ public class CreateTableSqlCommand extends SqlCommand {
 	 */
 	private List<Set<String>> uniqueKeyList;
 	
-	public CreateTableSqlCommand(String command, List<Set<String>> uniqueKeyList) {
+	public CreateTableSqlCommand(String command, String tableName, List<Set<String>> uniqueKeyList) {
 		super(command);
 		this.uniqueKeyList = uniqueKeyList;
+	}
+	
+	/**
+	 * 当CreateTableが作成するTABLE名称を返却します。
+	 * @return TABLE名称
+	 */
+	public String getCreateTableName() {
+		return createTableName;
+	}
+	
+	/**
+	 * 当CreateTableが保持するUNIQUE制約項目の一覧を返却します。
+	 * @return UNIQUEとなる項目一覧
+	 */
+	public List<Set<String>> getUniqueKeyList() {
+		return uniqueKeyList;
 	}
 	
 	/**
