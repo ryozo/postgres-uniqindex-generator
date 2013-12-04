@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import uidxgenerator.builder.CreateIndexSqlBuilder;
 
 /**
  * SQL全体を保持するDomainです。
@@ -44,7 +47,16 @@ public class EntireSQL implements Serializable {
 	 * @param conditionMap UNIQUE制約に対して追加する条件（Key:カラム名、Value:条件値)
 	 */
 	public void addConditionToAllUniqueConstraint(Map<String, String> conditionMap) {
-		
+		for (SqlCommand sqlCommand : sqlCommandList) {
+			if (sqlCommand instanceof CreateTableSqlCommand) {
+				CreateTableSqlCommand createTableSql = (CreateTableSqlCommand) sqlCommand;
+				createTableSql.removeUniqueConstraints();
+				List<Set<String>> uniqueKeyList = createTableSql.getUniqueKeyList();
+				for (Set<String> qunieKeySet : uniqueKeyList) {
+					
+				}
+			}
+		}
 	}
 	
 	/**

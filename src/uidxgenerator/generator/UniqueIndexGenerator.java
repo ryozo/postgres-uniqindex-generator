@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import uidxgenerator.domain.CreateTableSqlCommand;
 import uidxgenerator.domain.EntireSQL;
-import uidxgenerator.domain.SqlCommand;
 import uidxgenerator.parser.SQLParser;
 
 /**
@@ -36,13 +34,8 @@ public class UniqueIndexGenerator {
 		String sql = readSqlFile(file, fileEncoding);		
 		SQLParser sqlParser = new SQLParser();
 		EntireSQL entireSql = sqlParser.parse(sql);
-		
-		List<SqlCommand> sqlCommandList = entireSql.getSqlCommandList();
-		for (SqlCommand command : sqlCommandList) {
-			if (command instanceof CreateTableSqlCommand) {
-				
-			}
-		}
+		// TODO à¯êîèCê≥
+		entireSql.addConditionToAllUniqueConstraint(null);
 
 		return null;
 	}

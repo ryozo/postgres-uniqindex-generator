@@ -32,6 +32,7 @@ public class CreateIndexSqlBuilder {
 	private static final String REPLACE_STR_FIELD_VALUE = "{FIELD_VALUE}";
 	
 	/** Index名称 */
+	// TODO index名は指定もできるし、指定しなくてもいい（デフォルト値の設定）する。
 	private String indexName;
 	/** テーブル名称 */
 	private String tableName;
