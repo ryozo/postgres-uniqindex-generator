@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import static uidxgenerator.constants.SqlConstants.CREATE_TABLE_PREFIX;
+import static uidxgenerator.constants.SqlConstants.SQL_DELIMITER;
 import uidxgenerator.domain.SqlCommand;
 import uidxgenerator.util.StringUtil;
 
@@ -70,6 +72,10 @@ public class CreateIndexSqlBuilder {
 			throw new IllegalArgumentException("UniqueIndexの条件フィールドがNullです");
 		}
 		if (fieldValue == null) {
+			// PostgreSQL向けのSQLを発行する場合、この判定式にisEmptyを追加してはならない。
+			// PostgreSQLは空文字を認識するため、SQL上で[WHERE KEY = ""]を指定可能である。
+			// 空文字をISNULLに変換すると意味が変わってしまう。
+			// （変換後SQLがOracleである場合、Oracleは空文字を認識できないため、空文字をISNULL置換すべきである。
 			fieldValue = SQL_ISNULL;
 		}
 		conditionMap.put(fieldName, fieldValue);
@@ -120,11 +126,14 @@ public class CreateIndexSqlBuilder {
 					isFirst = false;
 				}
 				conditionBuilder.append(
-						SQL_CONDITION.replace(REPLACE_STR_FIELD_NAME, conditionEntry.getKey()
-								     .replace(REPLACE_STR_FIELD_VALUE, conditionEntry.getValue())));
+						SQL_CONDITION.replace(REPLACE_STR_FIELD_NAME, conditionEntry.getKey())
+								     .replace(REPLACE_STR_FIELD_VALUE, conditionEntry.getValue()));
 			}
 			sqlBuilder.append(conditionBuilder.toString());
 		}
+		
+		sqlBuilder.append(SQL_DELIMITER);
+		sqlBuilder.append(System.getProperty("line.separator"));
 		
 		SqlCommand command = new SqlCommand(sqlBuilder.toString());
 		return command;

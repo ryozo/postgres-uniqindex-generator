@@ -28,6 +28,7 @@ public class CreateTableSqlCommand extends SqlCommand {
 	
 	public CreateTableSqlCommand(String command, String tableName, List<Set<String>> uniqueKeyList) {
 		super(command);
+		this.createTableName = tableName;
 		this.uniqueKeyList = uniqueKeyList;
 	}
 	

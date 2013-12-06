@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import uidxgenerator.domain.EntireSQL;
 import uidxgenerator.parser.SQLParser;
@@ -34,10 +36,13 @@ public class UniqueIndexGenerator {
 		String sql = readSqlFile(file, fileEncoding);		
 		SQLParser sqlParser = new SQLParser();
 		EntireSQL entireSql = sqlParser.parse(sql);
-		// TODO 引数修正
-		entireSql.addConditionToAllUniqueConstraint(null);
 
-		return null;
+		Map<String, String> conditionMap = new HashMap<String, String>();
+		// TODO 修正
+		conditionMap.put(indexConditionField, indexConditionValue.toString());
+		entireSql.addConditionToAllUniqueConstraint(conditionMap);
+
+		return entireSql.toString();
 	}
 	
 	/**
@@ -72,7 +77,7 @@ public class UniqueIndexGenerator {
 	}
 	
 	/**
-	 * SQLファイルを読み込みます。
+	 * SQLファイル全体を読み込みます。
 	 * @param sqlFile 読み込み対象のSQLファイル
 	 * @param encoding SQLファイルの文字コード
 	 * @return 読み込んだSQLファイル（改行コード含む）
@@ -83,7 +88,6 @@ public class UniqueIndexGenerator {
 		try {
 			reader = new BufferedReader(new InputStreamReader(
 					new FileInputStream(sqlFile), encoding));
-			builder = new StringBuilder();
 			int c;
 			while ((c = reader.read()) != -1) {
 				builder.append((char) c);

@@ -47,15 +47,34 @@ public class EntireSQL implements Serializable {
 	 * @param conditionMap UNIQUE制約に対して追加する条件（Key:カラム名、Value:条件値)
 	 */
 	public void addConditionToAllUniqueConstraint(Map<String, String> conditionMap) {
+		List<SqlCommand> addSqlCommandList = new ArrayList<SqlCommand>();
 		for (SqlCommand sqlCommand : sqlCommandList) {
 			if (sqlCommand instanceof CreateTableSqlCommand) {
+				// TODO リファクタリング このif文は消せないか？
+				// 個々のCreateTable文のUniqueIndex制約を削除
 				CreateTableSqlCommand createTableSql = (CreateTableSqlCommand) sqlCommand;
 				createTableSql.removeUniqueConstraints();
+
 				List<Set<String>> uniqueKeyList = createTableSql.getUniqueKeyList();
-				for (Set<String> qunieKeySet : uniqueKeyList) {
-					
+				for (Set<String> uniqueKeySet : uniqueKeyList) {
+					CreateIndexSqlBuilder indexBuilder = new CreateIndexSqlBuilder(
+							"hoge_index", 
+							createTableSql.getCreateTableName(),
+							uniqueKeySet.toArray(new String[0]));
+					if (conditionMap != null) {
+						for (String key : conditionMap.keySet()) {
+							indexBuilder.setIndexCondition(key, conditionMap.get(key));
+						}
+					}
+
+					// 作成したCreateIndex文をSQLに追加
+					addSqlCommandList.add(indexBuilder.build());
 				}
 			}
+		}
+		
+		for (SqlCommand addSql : addSqlCommandList) {
+			addSqlCommand(addSql);
 		}
 	}
 	

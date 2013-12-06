@@ -9,6 +9,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static uidxgenerator.constants.SqlConstants.CREATE_TABLE_PREFIX;
+import static uidxgenerator.constants.SqlConstants.SQL_DELIMITER;
+import static uidxgenerator.constants.SqlConstants.MULTILINE_COMMENT_PREFIX;
+import static uidxgenerator.constants.SqlConstants.MULTILINE_COMMENT_SUFFIX;
+import static uidxgenerator.constants.SqlConstants.SINGLELINE_COMMENT_PREFIX;
+import static uidxgenerator.constants.SqlConstants.UNIQUE;
+
 import uidxgenerator.domain.CreateTableSqlCommand;
 import uidxgenerator.domain.EntireSQL;
 import uidxgenerator.domain.SqlCommand;
@@ -20,12 +27,6 @@ import uidxgenerator.util.StringUtil;
  * @version 1.0
  */
 public class SQLParser {
-	
-	/** Create Table文の接頭辞 */
-	private static final String CREATE_TABLE_PREFIX = "CREATE TABLE ";
-	
-	/** SQL文の区切り文字　*/
-	private static final String SQL_COMMAND_DELIMITER = ";";
 	
 	/**
 	 * SQL文を読み込み、{@link EntireSQL}オブジェクトに変換します。
@@ -72,25 +73,25 @@ public class SQLParser {
 				line = line.trim();
 				if (innerCommentLineFLg) {
 					// コメント中である場合、該当行内のコメント終了タグを探す。
-					if (line.indexOf("*/") != -1) {
+					if (line.indexOf(MULTILINE_COMMENT_SUFFIX) != -1) {
 						// コメント部分を読み飛ばし、以降の文字列をAppend
 						noCommentSqlBuilder.append(line.substring(line.indexOf("*/") + 2));
 						innerCommentLineFLg = false;
 					}
 					continue;
 				}
-				if (line.indexOf("--") != -1) {
+				if (line.indexOf(SINGLELINE_COMMENT_PREFIX) != -1) {
 					// コメント開始するまでの文字列をBuilderにコピー
 					noCommentSqlBuilder.append(line.substring(0, line.indexOf("--")));
 					continue;
 				}
-				if (line.indexOf("/*") != -1) {
+				if (line.indexOf(MULTILINE_COMMENT_PREFIX) != -1) {
 					// コメント開始するまでの文字列をBuilderにコピー
-					noCommentSqlBuilder.append(line.substring(0, line.indexOf("/*")));
-					String commentedString = line.substring(line.indexOf("/*") + 2);
-					if (commentedString.indexOf("*/") != -1) {
+					noCommentSqlBuilder.append(line.substring(0, line.indexOf(MULTILINE_COMMENT_PREFIX)));
+					String commentedString = line.substring(line.indexOf(MULTILINE_COMMENT_PREFIX) + 2);
+					if (commentedString.indexOf(MULTILINE_COMMENT_SUFFIX) != -1) {
 						// 同行中でSQLコメントが完了している
-						noCommentSqlBuilder.append(commentedString.substring(commentedString.indexOf("*/") + 2));
+						noCommentSqlBuilder.append(commentedString.substring(commentedString.indexOf(MULTILINE_COMMENT_SUFFIX) + 2));
 					} else {
 						innerCommentLineFLg = true;
 					}
@@ -119,6 +120,7 @@ public class SQLParser {
 		if (noCommentSql.toUpperCase().startsWith(CREATE_TABLE_PREFIX)) {
 			// Table名を取得する
 			int fromIndex = noCommentSql.indexOf(CREATE_TABLE_PREFIX) + CREATE_TABLE_PREFIX.length();
+			// TODO　ここが原因でTable名が正しく取得できていない。修正する。
 			int toIndex = noCommentSql.indexOf(" ", CREATE_TABLE_PREFIX.length());
 			String tableName = noCommentSql.substring(fromIndex, toIndex);
 			
@@ -130,7 +132,7 @@ public class SQLParser {
 				// 単項目UNIQEのチェック
 				// 2項目目以降にUNIQUEキーワードがあるかチェック forのStartは添え字1要素目から。
 				for (int j = 1; j < fieldItems.length; j++) {
-					if ("UNIQUE".equalsIgnoreCase(fieldItems[j].trim())) {
+					if (UNIQUE.equalsIgnoreCase(fieldItems[j].trim())) {
 						// 単項目UNIQUE発見
 						Set<String> columnSet = new HashSet<String>();
 						columnSet.add(fieldItems[0]);
@@ -140,7 +142,7 @@ public class SQLParser {
 				
 				// 複合項目UNIQUEのチェック
 				// 1キーワード目がUNIQUEであり、かつ2単語目の接頭辞が括弧の開始である場合複合UNIQUEである
-				if ("UNIQUE".equalsIgnoreCase(fieldItems[0])
+				if (UNIQUE.equalsIgnoreCase(fieldItems[0])
 						&& fieldItems[1].startsWith("(")) {
 					// 複合UNIQUE定義発見 括弧の開始から終わりまで取得し、フィールド一覧を取得
 					// 次の閉じ括弧を発見するまで後続のFieldを連結(split(",")実施のため、UNIQUEキーフィールドが分割されている。
@@ -192,9 +194,9 @@ public class SQLParser {
 	private List<String> splitSqlCommands(String targetSqlCommands) {
 		// TODO コメント対応
 		List<String> sqlCommandList = new ArrayList<String>();
-		String[] splitSqlCommands = targetSqlCommands.split(SQL_COMMAND_DELIMITER);
+		String[] splitSqlCommands = targetSqlCommands.split(SQL_DELIMITER);
 		for (String command : splitSqlCommands) {
-			sqlCommandList.add(command.concat(SQL_COMMAND_DELIMITER));
+			sqlCommandList.add(command.concat(SQL_DELIMITER));
 		}
 		
 		return sqlCommandList;
