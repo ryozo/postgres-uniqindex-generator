@@ -99,6 +99,7 @@ public class SQLParser {
 				}
 				
 				noCommentSqlBuilder.append(line);
+				noCommentSqlBuilder.append(" ");
 			}
 			
 		} catch (IOException ioe) {
@@ -118,22 +119,24 @@ public class SQLParser {
 		List<Set<String>> uniqueKeyList = new ArrayList<Set<String>>();
 
 		if (noCommentSql.toUpperCase().startsWith(CREATE_TABLE_PREFIX)) {
-			// Table名を取得する
+			// Table名を取得する(CreateTableの開始から次のスペースまでがテーブル名である。
 			int fromIndex = noCommentSql.indexOf(CREATE_TABLE_PREFIX) + CREATE_TABLE_PREFIX.length();
-			// TODO　ここが原因でTable名が正しく取得できていない。修正する。
 			int toIndex = noCommentSql.indexOf(" ", CREATE_TABLE_PREFIX.length());
+			System.out.println(noCommentSql);
 			String tableName = noCommentSql.substring(fromIndex, toIndex);
 			
 			String fieldDefinition = noCommentSql.substring(noCommentSql.indexOf("(") + 1);
 			// Field毎に分離する。ただし、この時点では末尾にField以外の情報を含んでいる状態。
 			String[] fields = fieldDefinition.split(",");
 			for (int i = 0; i < fields.length; i++) {
-				String[] fieldItems = fields[i].split(" ");
+				// TODO フィールドの合間にスペースが複数個続いた場合の動作を検証
+				String[] fieldItems = fields[i].trim().split(" ");
 				// 単項目UNIQEのチェック
-				// 2項目目以降にUNIQUEキーワードがあるかチェック forのStartは添え字1要素目から。
+				// 2項目目以降にUNIQUEキーワードがあるかチェック 1キーワード目はチェックしないからforのStartは添え字1要素目から。
 				for (int j = 1; j < fieldItems.length; j++) {
 					if (UNIQUE.equalsIgnoreCase(fieldItems[j].trim())) {
 						// 単項目UNIQUE発見
+						// UNIQUEキー情報を（1項目目）を保存
 						Set<String> columnSet = new HashSet<String>();
 						columnSet.add(fieldItems[0]);
 						uniqueKeyList.add(columnSet);
@@ -141,7 +144,7 @@ public class SQLParser {
 				}
 				
 				// 複合項目UNIQUEのチェック
-				// 1キーワード目がUNIQUEであり、かつ2単語目の接頭辞が括弧の開始である場合複合UNIQUEである
+				// 1キーワード目がUNIQUEであり、かつ2単語目の接頭辞が括弧の開始である場合、複合UNIQUEである
 				if (UNIQUE.equalsIgnoreCase(fieldItems[0])
 						&& fieldItems[1].startsWith("(")) {
 					// 複合UNIQUE定義発見 括弧の開始から終わりまで取得し、フィールド一覧を取得
@@ -192,7 +195,7 @@ public class SQLParser {
 	 * @return 分割後のSQL文
 	 */
 	private List<String> splitSqlCommands(String targetSqlCommands) {
-		// TODO コメント対応
+		// TODO コメント対応 CreateUniqueIndex前のセミコロンはここのコメント対応が終わればいける。
 		List<String> sqlCommandList = new ArrayList<String>();
 		String[] splitSqlCommands = targetSqlCommands.split(SQL_DELIMITER);
 		for (String command : splitSqlCommands) {

@@ -133,6 +133,7 @@ public class CreateIndexSqlBuilder {
 		}
 		
 		sqlBuilder.append(SQL_DELIMITER);
+		// TODO 改行コードを変更する(ER-MASTERはどの環境であっても改行コードをCRLFとする？
 		sqlBuilder.append(System.getProperty("line.separator"));
 		
 		SqlCommand command = new SqlCommand(sqlBuilder.toString());
