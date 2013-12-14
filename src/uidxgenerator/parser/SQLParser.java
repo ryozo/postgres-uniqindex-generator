@@ -75,6 +75,7 @@ public class SQLParser {
 					// コメント中である場合、該当行内のコメント終了タグを探す。
 					if (line.indexOf(MULTILINE_COMMENT_SUFFIX) != -1) {
 						// コメント部分を読み飛ばし、以降の文字列をAppend
+						// TODO 定数参照
 						noCommentSqlBuilder.append(line.substring(line.indexOf("*/") + 2));
 						innerCommentLineFLg = false;
 					}
@@ -190,7 +191,11 @@ public class SQLParser {
 	/**
 	 * 引数に受け取ったSQLコマンドをSQL区切り文字で分割し、List形式で返却します。<br />
 	 * 個々のSQL分は末尾にSQL区切り文字を含んだ状態で分割されます。<br />
-	 * 当メソッドはSQL区切り文字がSQL文のコメント文内で利用されている場合、正常に動作しません。
+	 * SQL文を分離する際はSQLのDelimiterを利用しますが、以下のブロックに位置するDelimiterは認識されません。
+	 * <pre>
+	 * 1．コメント文中のDelimiter（--ブロック内、もしくは\/* *\/ブロック内
+	 * 2．シングルクォート、またはダブルクォート内のDelimiter（例えばInsert時の初期値として設定されたDelimiter
+	 * </pre>
 	 * @param targetSqlCommands 変換対象のSQL文
 	 * @return 分割後のSQL文
 	 */

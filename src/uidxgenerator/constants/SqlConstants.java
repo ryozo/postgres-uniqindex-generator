@@ -16,6 +16,9 @@ public class SqlConstants {
 	/** 複数行コメントの開始 */
 	public static final String MULTILINE_COMMENT_PREFIX = "/*";
 	
+	/** 文字列リテラルの開始/終端文字 */
+	public static final String STRING_LITERAL = "'";
+	
 	/** 複数行コメントの終了 */
 	public static final String MULTILINE_COMMENT_SUFFIX = "*/";
 	
