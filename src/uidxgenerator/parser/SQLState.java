@@ -6,89 +6,89 @@ import static uidxgenerator.constants.SqlConstants.SINGLELINE_COMMENT_PREFIX;
 import static uidxgenerator.constants.SqlConstants.STRING_LITERAL;
 
 /**
- * SQL‚Ìó‘Ô‚ğŠÇ—‚·‚é.
+ * SQLã®çŠ¶æ…‹ã‚’ç®¡ç†ã™ã‚‹.
  * @author W.Ryozo
  * @version 1.0
  */
 public class SQLState {
-	/** SQL‚ÌŒ»İˆÊ’u‚ªƒRƒƒ“ƒg•¶’†‚Å‚ ‚é‚±‚Æ‚ğ•\‚·ƒtƒ‰ƒO */
+	/** SQLã®ç¾åœ¨ä½ç½®ãŒã‚³ãƒ¡ãƒ³ãƒˆæ–‡ä¸­ã§ã‚ã‚‹ã“ã¨ã‚’è¡¨ã™ãƒ•ãƒ©ã‚° */
 	private boolean inCommnet = false;
 	
-	/** SQL‚ÌŒ»İˆÊ’u‚ª•¶š—ñƒŠƒeƒ‰ƒ‹’†‚Å‚ ‚é‚±‚Æ‚ğ•\‚· */
+	/** SQLã®ç¾åœ¨ä½ç½®ãŒæ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ä¸­ã§ã‚ã‚‹ã“ã¨ã‚’è¡¨ã™ */
 	private boolean inStringLiteral = false;
 	
 	/**
-	 * ó‘Ô‚ğXV‚·‚éB
+	 * çŠ¶æ…‹ã‚’æ›´æ–°ã™ã‚‹ã€‚
 	 * @param decisionTargetSql
 	 */
 	void updateState(String decisionTargetSql) {
-		// TODO Œ»İ‚Ìˆ—‚Í1s’PˆÊ‚Å“–ƒƒ\ƒbƒh‚ªŒÄ‚Ño‚³‚ê‚é‘O’ñ‚Æ‚È‚Á‚Ä‚¢‚éBi1sƒRƒƒ“ƒg‚ÌŠJn/I—¹‚ÉŠÖ‚·‚éî•ñ‚ªŸƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µ‚Éˆø‚«Œp‚ª‚ê‚È‚¢js–ˆ‚ÌŒÄ‚Ño‚µˆË‘¶‚É‚È‚ç‚È‚¢‚æ‚¤‚É‚·‚éB
-		// ƒL[ƒ[ƒh‚Ì—L–³‚ğŠm”F‚·‚éB
+		// TODO ç¾åœ¨ã®å‡¦ç†ã¯1è¡Œå˜ä½ã§å½“ãƒ¡ã‚½ãƒƒãƒ‰ãŒå‘¼ã³å‡ºã•ã‚Œã‚‹å‰æã¨ãªã£ã¦ã„ã‚‹ã€‚ï¼ˆ1è¡Œã‚³ãƒ¡ãƒ³ãƒˆã®é–‹å§‹/çµ‚äº†ã«é–¢ã™ã‚‹æƒ…å ±ãŒæ¬¡ãƒ¡ã‚½ãƒƒãƒ‰ã®å‘¼ã³å‡ºã—ã«å¼•ãç¶™ãŒã‚Œãªã„ï¼‰è¡Œæ¯ã®å‘¼ã³å‡ºã—ä¾å­˜ã«ãªã‚‰ãªã„ã‚ˆã†ã«ã™ã‚‹ã€‚
+		// ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã®æœ‰ç„¡ã‚’ç¢ºèªã™ã‚‹ã€‚
 		if (decisionTargetSql == null
 				|| decisionTargetSql.trim().length() == 0) {
 			return;
 		}
 		
-		// ‘ÎÛƒL[ƒ[ƒh‚Ì—L–³‚ğ”»’è‚·‚éB
+		// å¯¾è±¡ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã®æœ‰ç„¡ã‚’åˆ¤å®šã™ã‚‹ã€‚
 		if (inCommnet) {
-			// ƒRƒƒ“ƒg•¶’†‚Å‚ ‚éê‡AƒRƒƒ“ƒg‚ÌI’[‚ğ’T‚·
+			// ã‚³ãƒ¡ãƒ³ãƒˆæ–‡ä¸­ã§ã‚ã‚‹å ´åˆã€ã‚³ãƒ¡ãƒ³ãƒˆã®çµ‚ç«¯ã‚’æ¢ã™
 			int endCommentIndex = decisionTargetSql.indexOf(MULTILINE_COMMENT_SUFFIX);
 			if (endCommentIndex != -1) {
 				inCommnet = false;
-				// Œã‘±‚Ì•¶š—ñ‚ğˆø‚«‘±‚«•]‰¿‚·‚éB
+				// å¾Œç¶šã®æ–‡å­—åˆ—ã‚’å¼•ãç¶šãè©•ä¾¡ã™ã‚‹ã€‚
 				this.updateState(decisionTargetSql.substring(endCommentIndex + MULTILINE_COMMENT_SUFFIX.length()));
 			}
 		} else if (inStringLiteral) {
-			// ƒRƒƒ“ƒg•¶‚Å‚ ‚èA‚©‚ÂƒŠƒeƒ‰ƒ‹‚Å‚ ‚é‚Æ‚¢‚Á‚½•\‹L‚Í•s‰Â‚Å‚ ‚éB
-			// TODO ƒGƒXƒP[ƒv•¶š—ñ‚É‘Î‰H
-			// String•¶š—ñ’è‹`‚Å‚ ‚éê‡AStringƒŠƒeƒ‰ƒ‹‚ÌI’[‚ğ’T‚·B
+			// ã‚³ãƒ¡ãƒ³ãƒˆæ–‡ã§ã‚ã‚Šã€ã‹ã¤ãƒªãƒ†ãƒ©ãƒ«ã§ã‚ã‚‹ã¨ã„ã£ãŸè¡¨è¨˜ã¯ä¸å¯ã§ã‚ã‚‹ã€‚
+			// TODO ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—æ–‡å­—åˆ—ã«å¯¾å¿œï¼Ÿ
+			// Stringæ–‡å­—åˆ—å®šç¾©ã§ã‚ã‚‹å ´åˆã€Stringãƒªãƒ†ãƒ©ãƒ«ã®çµ‚ç«¯ã‚’æ¢ã™ã€‚
 			int endStringLiteralIndex = decisionTargetSql.indexOf(STRING_LITERAL);
 			if (endStringLiteralIndex != -1) {
 				inStringLiteral = false;
-				// Œã‘±‚Ì•¶š‚ğˆø‚«‘±‚«•]‰¿‚·‚éB
+				// å¾Œç¶šã®æ–‡å­—ã‚’å¼•ãç¶šãè©•ä¾¡ã™ã‚‹ã€‚
 				this.updateState(decisionTargetSql.substring(endStringLiteralIndex + STRING_LITERAL.length()));
 			}
 		} else {
-			// ƒRƒƒ“ƒg•¶’†‚Å‚à•¶š—ñƒŠƒeƒ‰ƒ‹“à‚Å‚à‚È‚¢ê‡
+			// ã‚³ãƒ¡ãƒ³ãƒˆæ–‡ä¸­ã§ã‚‚æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«å†…ã§ã‚‚ãªã„å ´åˆ
 			int startSingleCommentIndex = decisionTargetSql.indexOf(SINGLELINE_COMMENT_PREFIX);
 			int startMultiCommentIndex = decisionTargetSql.indexOf(MULTILINE_COMMENT_PREFIX);
 			int startStringLiteralIndex = decisionTargetSql.indexOf(STRING_LITERAL);
 			int minimumIndex = getMinimumOfPositive(startSingleCommentIndex, startMultiCommentIndex, startStringLiteralIndex);
 			if (minimumIndex < 0) {
-				// ƒRƒƒ“ƒg•¶‚àƒŠƒeƒ‰ƒ‹‚à‰½‚à’è‹`‚³‚ê‚Ä‚¢‚È‚¢B
-				// ƒXƒe[ƒ^ƒXXV‚¹‚¸ˆ—I—¹B
+				// ã‚³ãƒ¡ãƒ³ãƒˆæ–‡ã‚‚ãƒªãƒ†ãƒ©ãƒ«ã‚‚ä½•ã‚‚å®šç¾©ã•ã‚Œã¦ã„ãªã„ã€‚
+				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æ›´æ–°ã›ãšå‡¦ç†çµ‚äº†ã€‚
 				return ;
 			} else if (startSingleCommentIndex == minimumIndex) {
-				// ’¼‹ß‚ª1sƒRƒƒ“ƒg‚Ìê‡
-				// ‚±‚Ìs‚Ìc‚è‚Ìs‚Í‚·‚×‚ÄƒRƒƒ“ƒg‚Å‚ ‚éB
-				// ó‘Ô‚ğXV‚¹‚¸Aˆ—‚ğI—¹‚·‚é
+				// ç›´è¿‘ãŒ1è¡Œã‚³ãƒ¡ãƒ³ãƒˆã®å ´åˆ
+				// ã“ã®è¡Œã®æ®‹ã‚Šã®è¡Œã¯ã™ã¹ã¦ã‚³ãƒ¡ãƒ³ãƒˆã§ã‚ã‚‹ã€‚
+				// çŠ¶æ…‹ã‚’æ›´æ–°ã›ãšã€å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹
 				return ;
 			} else if (startMultiCommentIndex == minimumIndex) {
-				// ’¼‹ß‚ª•¡”sƒRƒƒ“ƒg‚ÌŠJn‚Å‚ ‚Á‚½ê‡
-				// “¯ˆês“à‚ÉƒRƒƒ“ƒg‚ÌI’[‚ª‚ ‚é‚©ƒ`ƒFƒbƒN
+				// ç›´è¿‘ãŒè¤‡æ•°è¡Œã‚³ãƒ¡ãƒ³ãƒˆã®é–‹å§‹ã§ã‚ã£ãŸå ´åˆ
+				// åŒä¸€è¡Œå†…ã«ã‚³ãƒ¡ãƒ³ãƒˆã®çµ‚ç«¯ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 				int endMultiCommentIndex = decisionTargetSql.indexOf(MULTILINE_COMMENT_SUFFIX, startMultiCommentIndex + MULTILINE_COMMENT_PREFIX.length());
 				if (endMultiCommentIndex != -1) {
-					// ƒRƒƒ“ƒg‚ÌI’[‚ª‘¶İ‚·‚éê‡
-					// ƒRƒƒ“ƒg‚Ü‚½‚Í•¶š—ñƒŠƒeƒ‰ƒ‹‚ÌI—¹ˆÈŒã‚ğØ‚èæ‚Á‚Ä”»’è‚ğˆø‚«‘±‚«À{ “¯ˆês“à‚ÅƒRƒƒ“ƒg‚Ü‚½‚Í•¶š—ñƒŠƒeƒ‰ƒ‹‚ÍI—¹‚µ‚Ä‚¢‚é‚©‚çAƒXƒe[ƒ^ƒXXV•s—vB
+					// ã‚³ãƒ¡ãƒ³ãƒˆã®çµ‚ç«¯ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
+					// ã‚³ãƒ¡ãƒ³ãƒˆã¾ãŸã¯æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®çµ‚äº†ä»¥å¾Œã‚’åˆ‡ã‚Šå–ã£ã¦åˆ¤å®šã‚’å¼•ãç¶šãå®Ÿæ–½ åŒä¸€è¡Œå†…ã§ã‚³ãƒ¡ãƒ³ãƒˆã¾ãŸã¯æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã¯çµ‚äº†ã—ã¦ã„ã‚‹ã‹ã‚‰ã€ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æ›´æ–°ä¸è¦ã€‚
 					this.updateState(decisionTargetSql.substring(endMultiCommentIndex + MULTILINE_COMMENT_SUFFIX.length()));
 				} else {
-					// ƒRƒƒ“ƒg‚Ü‚½‚Í•¶š—ñƒŠƒeƒ‰ƒ‹‚ÌI’[‚ª‘¶İ‚µ‚È‚¢ê‡
-					// ŠY“–s“à‚ÅƒRƒƒ“ƒg‚Ü‚½‚Í•¶š—ñƒŠƒeƒ‰ƒ‹I—¹‚µ‚Ä‚¢‚È‚¢‚½‚ßAƒXƒe[ƒ^ƒX‚ğXV‚·‚éB
+					// ã‚³ãƒ¡ãƒ³ãƒˆã¾ãŸã¯æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®çµ‚ç«¯ãŒå­˜åœ¨ã—ãªã„å ´åˆ
+					// è©²å½“è¡Œå†…ã§ã‚³ãƒ¡ãƒ³ãƒˆã¾ãŸã¯æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«çµ‚äº†ã—ã¦ã„ãªã„ãŸã‚ã€ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’æ›´æ–°ã™ã‚‹ã€‚
 					inCommnet = true;
 					return ;
 				}
 			} else if (startStringLiteralIndex == minimumIndex) {
-				// ’¼‹ß‚ª•¶š—ñƒŠƒeƒ‰ƒ‹‚ÌŠJn‚Å‚ ‚éê‡
-				// “¯ˆês“à‚É•¶š—ñƒŠƒeƒ‰ƒ‹‚ÌI’[‚ª‚ ‚é‚©ƒ`ƒFƒbƒN
+				// ç›´è¿‘ãŒæ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®é–‹å§‹ã§ã‚ã‚‹å ´åˆ
+				// åŒä¸€è¡Œå†…ã«æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®çµ‚ç«¯ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 				int endStringLiteralIndex = decisionTargetSql.indexOf(STRING_LITERAL, startStringLiteralIndex + STRING_LITERAL.length());
 				if (endStringLiteralIndex != -1) {
-					// •¶š—ñƒŠƒeƒ‰ƒ‹‚ÌI—¹‚ª‘¶İ‚·‚éê‡
-					// •¶š—ñƒŠƒeƒ‰ƒ‹‚ÌI’[ˆÈŒã‚ğØ‚èæ‚Á‚Ä”»’è‚ğˆø‚«‘±‚«À{
-					// “¯ˆês“à‚Å•¶š—ñƒŠƒeƒ‰ƒ‹‚ÍI—¹‚µ‚Ä‚¢‚é‚©‚çƒXƒe[ƒ^ƒXXV•s—v
+					// æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®çµ‚äº†ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
+					// æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®çµ‚ç«¯ä»¥å¾Œã‚’åˆ‡ã‚Šå–ã£ã¦åˆ¤å®šã‚’å¼•ãç¶šãå®Ÿæ–½
+					// åŒä¸€è¡Œå†…ã§æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã¯çµ‚äº†ã—ã¦ã„ã‚‹ã‹ã‚‰ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æ›´æ–°ä¸è¦
 					this.updateState(decisionTargetSql.substring(endStringLiteralIndex + STRING_LITERAL.length()));
 				} else {
-					// •¶š—ñƒŠƒeƒ‰ƒ‹‚ÌI—¹‚ª‘¶İ‚µ‚È‚¢ê‡
-					// •¶š—ñƒŠƒeƒ‰ƒ‹‚Í•¡”s‚É‚í‚½‚Á‚Ä‹Lq‚³‚ê‚Ä‚¢‚é‚½‚ßAƒXƒe[ƒ^ƒX‚ğXV‚·‚éB
+					// æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®çµ‚äº†ãŒå­˜åœ¨ã—ãªã„å ´åˆ
+					// æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã¯è¤‡æ•°è¡Œã«ã‚ãŸã£ã¦è¨˜è¿°ã•ã‚Œã¦ã„ã‚‹ãŸã‚ã€ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’æ›´æ–°ã™ã‚‹ã€‚
 					inStringLiteral = true;
 					return ;
 				}
@@ -107,7 +107,7 @@ public class SQLState {
 				continue;
 			}
 			if (target == 0) {
-				// 0‚ª—ˆ‚½‚çÅ¬’lŠm’èB
+				// 0ãŒæ¥ãŸã‚‰æœ€å°å€¤ç¢ºå®šã€‚
 				return 0;
 			}
 			foundPositiveNum = true;
@@ -116,7 +116,7 @@ public class SQLState {
 			}
 		}
 		
-		// ³‚Ì”‚ªˆê‚Â‚à–³‚¯‚ê‚ÎÅ‰‚Ì—v‘f‚ğ•Ô‚·B
+		// æ­£ã®æ•°ãŒä¸€ã¤ã‚‚ç„¡ã‘ã‚Œã°æœ€åˆã®è¦ç´ ã‚’è¿”ã™ã€‚
 		return foundPositiveNum ? a : targets[0];
 	}
 
@@ -125,7 +125,7 @@ public class SQLState {
 	 * @return
 	 */
 	boolean isEffective() {
-		// ƒRƒƒ“ƒg‚Ì’†‚Å‚È‚­AŠ‚Â•¶š—ñƒŠƒeƒ‰ƒ‹‚Ì’†‚Å‚à‚È‚¢B
+		// ã‚³ãƒ¡ãƒ³ãƒˆã®ä¸­ã§ãªãã€ä¸”ã¤æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®ä¸­ã§ã‚‚ãªã„ã€‚
 		return !inCommnet && !inStringLiteral;
 	}
 }

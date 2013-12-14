@@ -13,7 +13,7 @@ import uidxgenerator.domain.EntireSQL;
 import uidxgenerator.parser.SQLParser;
 
 /**
- * UniqueIndex‚ÌGenerator‚Å‚·B
+ * UniqueIndexã®Generatorã§ã™ã€‚
  * @author W.Ryozo
  * @version 1.0
  */
@@ -25,20 +25,20 @@ public class UniqueIndexGenerator {
 			String indexConditionField, 
 			Boolean indexConditionValue) throws Exception {
 		if (sqlFilePath == null) {
-			throw new IllegalArgumentException("‘ÎÛSQLƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ‚Å‚·");
+			throw new IllegalArgumentException("å¯¾è±¡SQLãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã§ã™");
 		}
 		File file = new File(sqlFilePath);
 		if (!file.isFile()) {
-			throw new IllegalArgumentException("‘ÎÛSQLƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
+			throw new IllegalArgumentException("å¯¾è±¡SQLãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ã¾ã›ã‚“");
 		}
 
-		// TODO ˆø”‚ÌValidate
+		// TODO å¼•æ•°ã®Validate
 		String sql = readSqlFile(file, fileEncoding);		
 		SQLParser sqlParser = new SQLParser();
 		EntireSQL entireSql = sqlParser.parse(sql);
 
 		Map<String, String> conditionMap = new HashMap<String, String>();
-		// TODO C³
+		// TODO ä¿®æ­£
 		conditionMap.put(indexConditionField, indexConditionValue.toString());
 		entireSql.addConditionToAllUniqueConstraint(conditionMap);
 
@@ -46,26 +46,26 @@ public class UniqueIndexGenerator {
 	}
 	
 	/**
-	 * TODO Ú×‚É‹LqB
-	 * @param sqlPath UniqueIndex•t—^‘ÎÛ‚Æ‚·‚éSQLƒtƒ@ƒCƒ‹ƒpƒX
-	 * @param fileEncoding SQLFile‚ÌƒGƒ“ƒR[ƒfƒBƒ“ƒO
-	 * @param indexConditionFields UniqueIndex‚ÌğŒ
-	 * @return ì¬‚µ‚½SQLƒtƒ@ƒCƒ‹‚ÌƒpƒX
+	 * TODO è©³ç´°ã«è¨˜è¿°ã€‚
+	 * @param sqlPath UniqueIndexä»˜ä¸å¯¾è±¡ã¨ã™ã‚‹SQLãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+	 * @param fileEncoding SQLFileã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°
+	 * @param indexConditionFields UniqueIndexã®æ¡ä»¶
+	 * @return ä½œæˆã—ãŸSQLãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
 	 */
-	// TODO throws Exception‚ğC³
+	// TODO throws Exceptionã‚’ä¿®æ­£
 	public String generate(String sqlFilePath, String fileEncoding, String... indexConditionFields) throws Exception {
 		// Validate
 		if (sqlFilePath == null) {
-			throw new IllegalArgumentException("‘ÎÛSQLƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ‚Å‚·");
+			throw new IllegalArgumentException("å¯¾è±¡SQLãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ãŒæŒ‡å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã§ã™");
 		}
 		File file = new File(sqlFilePath);
 		if (!file.isFile()) {
-			throw new IllegalArgumentException("‘ÎÛSQLƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚Ü‚¹‚ñ");
+			throw new IllegalArgumentException("å¯¾è±¡SQLãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ã¾ã›ã‚“");
 		}
 		
 		if (indexConditionFields == null 
 				|| indexConditionFields.length == 0) {
-			// TODO ƒtƒ@ƒCƒ‹•ÏX•s—v
+			// TODO ãƒ•ã‚¡ã‚¤ãƒ«å¤‰æ›´ä¸è¦
 		}
 		
 		String sql = readSqlFile(file, fileEncoding);
@@ -77,10 +77,10 @@ public class UniqueIndexGenerator {
 	}
 	
 	/**
-	 * SQLƒtƒ@ƒCƒ‹‘S‘Ì‚ğ“Ç‚İ‚İ‚Ü‚·B
-	 * @param sqlFile “Ç‚İ‚İ‘ÎÛ‚ÌSQLƒtƒ@ƒCƒ‹
-	 * @param encoding SQLƒtƒ@ƒCƒ‹‚Ì•¶šƒR[ƒh
-	 * @return “Ç‚İ‚ñ‚¾SQLƒtƒ@ƒCƒ‹i‰üsƒR[ƒhŠÜ‚Şj
+	 * SQLãƒ•ã‚¡ã‚¤ãƒ«å…¨ä½“ã‚’èª­ã¿è¾¼ã¿ã¾ã™ã€‚
+	 * @param sqlFile èª­ã¿è¾¼ã¿å¯¾è±¡ã®SQLãƒ•ã‚¡ã‚¤ãƒ«
+	 * @param encoding SQLãƒ•ã‚¡ã‚¤ãƒ«ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰
+	 * @return èª­ã¿è¾¼ã‚“ã SQLãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆæ”¹è¡Œã‚³ãƒ¼ãƒ‰å«ã‚€ï¼‰
 	 */
 	private String readSqlFile(File sqlFile, String encoding) throws IOException {
 		BufferedReader reader = null;

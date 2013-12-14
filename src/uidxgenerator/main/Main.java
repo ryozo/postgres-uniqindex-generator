@@ -2,7 +2,7 @@ package uidxgenerator.main;
 
 import uidxgenerator.generator.UniqueIndexGenerator;
 
-// TODO �폜
+// TODO 削除
 public class Main {
 	
 	public static void main(String[] args) throws Exception {

@@ -1,31 +1,31 @@
 package uidxgenerator.constants;
 
 /**
- * SQLŠÖ˜A‚Ì’è”‚ğ’è‹`‚µ‚Ü‚·B
+ * SQLé–¢é€£ã®å®šæ•°ã‚’å®šç¾©ã—ã¾ã™ã€‚
  * @author W.Ryozo
  * @version 1.0
  */
 public class SqlConstants {
 	
-	/** Create Table•¶‚ÌÚ“ª« */
+	/** Create Tableæ–‡ã®æ¥é ­è¾ */
 	public static final String CREATE_TABLE_PREFIX = "CREATE TABLE ";
 	
-	/** SQL•¶‚Ì‹æØ‚è•¶š@*/
+	/** SQLæ–‡ã®åŒºåˆ‡ã‚Šæ–‡å­—ã€€*/
 	public static final String SQL_DELIMITER = ";";
 	
-	/** •¡”sƒRƒƒ“ƒg‚ÌŠJn */
+	/** è¤‡æ•°è¡Œã‚³ãƒ¡ãƒ³ãƒˆã®é–‹å§‹ */
 	public static final String MULTILINE_COMMENT_PREFIX = "/*";
 	
-	/** •¶š—ñƒŠƒeƒ‰ƒ‹‚ÌŠJn/I’[•¶š */
+	/** æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«ã®é–‹å§‹/çµ‚ç«¯æ–‡å­— */
 	public static final String STRING_LITERAL = "'";
 	
-	/** •¡”sƒRƒƒ“ƒg‚ÌI—¹ */
+	/** è¤‡æ•°è¡Œã‚³ãƒ¡ãƒ³ãƒˆã®çµ‚äº† */
 	public static final String MULTILINE_COMMENT_SUFFIX = "*/";
 	
-	/** ’PˆêsƒRƒƒ“ƒg‚ÌŠJn */
+	/** å˜ä¸€è¡Œã‚³ãƒ¡ãƒ³ãƒˆã®é–‹å§‹ */
 	public static final String SINGLELINE_COMMENT_PREFIX = "--";
 	
-	/** UNIQUEƒL[ƒ[ƒh */
+	/** UNIQUEã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ */
 	public static final String UNIQUE = "UNIQUE";
 
 }

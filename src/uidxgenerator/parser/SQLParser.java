@@ -22,16 +22,16 @@ import uidxgenerator.domain.SqlCommand;
 import uidxgenerator.util.StringUtil;
 
 /**
- * SQL•¶‚ÌParser‚Å‚·B<br />
+ * SQLæ–‡ã®Parserã§ã™ã€‚<br />
  * @author W.Ryozo
  * @version 1.0
  */
 public class SQLParser {
 	
 	/**
-	 * SQL•¶‚ğ“Ç‚İ‚İA{@link EntireSQL}ƒIƒuƒWƒFƒNƒg‚É•ÏŠ·‚µ‚Ü‚·B
-	 * @param targetSqlCommands SQL•¶
-	 * @return ˆø”‚ÌSQL‚ğ‰ğÍ‚µ‚½EntireSQL
+	 * SQLæ–‡ã‚’èª­ã¿è¾¼ã¿ã€{@link EntireSQL}ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å¤‰æ›ã—ã¾ã™ã€‚
+	 * @param targetSqlCommands SQLæ–‡
+	 * @return å¼•æ•°ã®SQLã‚’è§£æã—ãŸEntireSQL
 	 */
 	public EntireSQL parse(String targetSqlCommands) {
 		EntireSQL entireSQL = new EntireSQL();
@@ -48,9 +48,9 @@ public class SQLParser {
 	}
 	
 	/**
-	 * ˆø”‚Éó‚¯æ‚Á‚½SQL‚ğŒ³‚ÉSqlCommand‚ğì¬‚µ‚Ü‚·B
-	 * @param sql ‘ÎÛ‚ÌSQL
-	 * @return ì¬‚µ‚½SQLCommand
+	 * å¼•æ•°ã«å—ã‘å–ã£ãŸSQLã‚’å…ƒã«SqlCommandã‚’ä½œæˆã—ã¾ã™ã€‚
+	 * @param sql å¯¾è±¡ã®SQL
+	 * @return ä½œæˆã—ãŸSQLCommand
 	 */
 	private SqlCommand buildSqlCommand(String sql) {
 		if (StringUtil.isNullOrEmpty(sql)) {
@@ -63,35 +63,35 @@ public class SQLParser {
 		StringBuilder noCommentSqlBuilder = new StringBuilder();
 
 		try {
-			// 1SQL‚ğ1s‚¸‚Â•ªÍ‚µAƒRƒƒ“ƒg‚È‚µ‚ÌSQL•¶‚ğ\¬‚·‚éB
+			// 1SQLã‚’1è¡Œãšã¤åˆ†æã—ã€ã‚³ãƒ¡ãƒ³ãƒˆãªã—ã®SQLæ–‡ã‚’æ§‹æˆã™ã‚‹ã€‚
 			reader = new BufferedReader(new StringReader(sql));
 			
-			// Œ»İQÆ‚·‚és‚ªƒRƒƒ“ƒg’†‚Å‚ ‚é‚©”Û‚©‚ğ•\‚·ƒtƒ‰ƒO
+			// ç¾åœ¨å‚ç…§ã™ã‚‹è¡ŒãŒã‚³ãƒ¡ãƒ³ãƒˆä¸­ã§ã‚ã‚‹ã‹å¦ã‹ã‚’è¡¨ã™ãƒ•ãƒ©ã‚°
 			boolean innerCommentLineFLg = false;
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 				if (innerCommentLineFLg) {
-					// ƒRƒƒ“ƒg’†‚Å‚ ‚éê‡AŠY“–s“à‚ÌƒRƒƒ“ƒgI—¹ƒ^ƒO‚ğ’T‚·B
+					// ã‚³ãƒ¡ãƒ³ãƒˆä¸­ã§ã‚ã‚‹å ´åˆã€è©²å½“è¡Œå†…ã®ã‚³ãƒ¡ãƒ³ãƒˆçµ‚äº†ã‚¿ã‚°ã‚’æ¢ã™ã€‚
 					if (line.indexOf(MULTILINE_COMMENT_SUFFIX) != -1) {
-						// ƒRƒƒ“ƒg•”•ª‚ğ“Ç‚İ”ò‚Î‚µAˆÈ~‚Ì•¶š—ñ‚ğAppend
-						// TODO ’è”QÆ
+						// ã‚³ãƒ¡ãƒ³ãƒˆéƒ¨åˆ†ã‚’èª­ã¿é£›ã°ã—ã€ä»¥é™ã®æ–‡å­—åˆ—ã‚’Append
+						// TODO å®šæ•°å‚ç…§
 						noCommentSqlBuilder.append(line.substring(line.indexOf("*/") + 2));
 						innerCommentLineFLg = false;
 					}
 					continue;
 				}
 				if (line.indexOf(SINGLELINE_COMMENT_PREFIX) != -1) {
-					// ƒRƒƒ“ƒgŠJn‚·‚é‚Ü‚Å‚Ì•¶š—ñ‚ğBuilder‚ÉƒRƒs[
+					// ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹ã™ã‚‹ã¾ã§ã®æ–‡å­—åˆ—ã‚’Builderã«ã‚³ãƒ”ãƒ¼
 					noCommentSqlBuilder.append(line.substring(0, line.indexOf("--")));
 					continue;
 				}
 				if (line.indexOf(MULTILINE_COMMENT_PREFIX) != -1) {
-					// ƒRƒƒ“ƒgŠJn‚·‚é‚Ü‚Å‚Ì•¶š—ñ‚ğBuilder‚ÉƒRƒs[
+					// ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹ã™ã‚‹ã¾ã§ã®æ–‡å­—åˆ—ã‚’Builderã«ã‚³ãƒ”ãƒ¼
 					noCommentSqlBuilder.append(line.substring(0, line.indexOf(MULTILINE_COMMENT_PREFIX)));
 					String commentedString = line.substring(line.indexOf(MULTILINE_COMMENT_PREFIX) + 2);
 					if (commentedString.indexOf(MULTILINE_COMMENT_SUFFIX) != -1) {
-						// “¯s’†‚ÅSQLƒRƒƒ“ƒg‚ªŠ®—¹‚µ‚Ä‚¢‚é
+						// åŒè¡Œä¸­ã§SQLã‚³ãƒ¡ãƒ³ãƒˆãŒå®Œäº†ã—ã¦ã„ã‚‹
 						noCommentSqlBuilder.append(commentedString.substring(commentedString.indexOf(MULTILINE_COMMENT_SUFFIX) + 2));
 					} else {
 						innerCommentLineFLg = true;
@@ -104,14 +104,14 @@ public class SQLParser {
 			}
 			
 		} catch (IOException ioe) {
-			// TODO —áŠOˆ—
+			// TODO ä¾‹å¤–å‡¦ç†
 			throw new RuntimeException(ioe);
 		} finally {
 			if (reader != null) {
 				try {
 					reader.close();
 				} catch (Exception e) {
-					// Ì‚Ä‚é StringReader‚¾‚©‚çB
+					// æ¨ã¦ã‚‹ StringReaderã ã‹ã‚‰ã€‚
 				}
 			}
 		}
@@ -120,51 +120,51 @@ public class SQLParser {
 		List<Set<String>> uniqueKeyList = new ArrayList<Set<String>>();
 
 		if (noCommentSql.toUpperCase().startsWith(CREATE_TABLE_PREFIX)) {
-			// Table–¼‚ğæ“¾‚·‚é(CreateTable‚ÌŠJn‚©‚çŸ‚ÌƒXƒy[ƒX‚Ü‚Å‚ªƒe[ƒuƒ‹–¼‚Å‚ ‚éB
+			// Tableåã‚’å–å¾—ã™ã‚‹(CreateTableã®é–‹å§‹ã‹ã‚‰æ¬¡ã®ã‚¹ãƒšãƒ¼ã‚¹ã¾ã§ãŒãƒ†ãƒ¼ãƒ–ãƒ«åã§ã‚ã‚‹ã€‚
 			int fromIndex = noCommentSql.indexOf(CREATE_TABLE_PREFIX) + CREATE_TABLE_PREFIX.length();
 			int toIndex = noCommentSql.indexOf(" ", CREATE_TABLE_PREFIX.length());
 			System.out.println(noCommentSql);
 			String tableName = noCommentSql.substring(fromIndex, toIndex);
 			
 			String fieldDefinition = noCommentSql.substring(noCommentSql.indexOf("(") + 1);
-			// Field–ˆ‚É•ª—£‚·‚éB‚½‚¾‚µA‚±‚Ì“_‚Å‚Í––”ö‚ÉFieldˆÈŠO‚Ìî•ñ‚ğŠÜ‚ñ‚Å‚¢‚éó‘ÔB
+			// Fieldæ¯ã«åˆ†é›¢ã™ã‚‹ã€‚ãŸã ã—ã€ã“ã®æ™‚ç‚¹ã§ã¯æœ«å°¾ã«Fieldä»¥å¤–ã®æƒ…å ±ã‚’å«ã‚“ã§ã„ã‚‹çŠ¶æ…‹ã€‚
 			String[] fields = fieldDefinition.split(",");
 			for (int i = 0; i < fields.length; i++) {
-				// TODO ƒtƒB[ƒ‹ƒh‚Ì‡ŠÔ‚ÉƒXƒy[ƒX‚ª•¡”ŒÂ‘±‚¢‚½ê‡‚Ì“®ì‚ğŒŸØ
+				// TODO ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®åˆé–“ã«ã‚¹ãƒšãƒ¼ã‚¹ãŒè¤‡æ•°å€‹ç¶šã„ãŸå ´åˆã®å‹•ä½œã‚’æ¤œè¨¼
 				String[] fieldItems = fields[i].trim().split(" ");
-				// ’P€–ÚUNIQE‚Ìƒ`ƒFƒbƒN
-				// 2€–Ú–ÚˆÈ~‚ÉUNIQUEƒL[ƒ[ƒh‚ª‚ ‚é‚©ƒ`ƒFƒbƒN 1ƒL[ƒ[ƒh–Ú‚Íƒ`ƒFƒbƒN‚µ‚È‚¢‚©‚çfor‚ÌStart‚Í“Y‚¦š1—v‘f–Ú‚©‚çB
+				// å˜é …ç›®UNIQEã®ãƒã‚§ãƒƒã‚¯
+				// 2é …ç›®ç›®ä»¥é™ã«UNIQUEã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ 1ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ç›®ã¯ãƒã‚§ãƒƒã‚¯ã—ãªã„ã‹ã‚‰forã®Startã¯æ·»ãˆå­—1è¦ç´ ç›®ã‹ã‚‰ã€‚
 				for (int j = 1; j < fieldItems.length; j++) {
 					if (UNIQUE.equalsIgnoreCase(fieldItems[j].trim())) {
-						// ’P€–ÚUNIQUE”­Œ©
-						// UNIQUEƒL[î•ñ‚ği1€–Ú–Új‚ğ•Û‘¶
+						// å˜é …ç›®UNIQUEç™ºè¦‹
+						// UNIQUEã‚­ãƒ¼æƒ…å ±ã‚’ï¼ˆ1é …ç›®ç›®ï¼‰ã‚’ä¿å­˜
 						Set<String> columnSet = new HashSet<String>();
 						columnSet.add(fieldItems[0]);
 						uniqueKeyList.add(columnSet);
 					}
 				}
 				
-				// •¡‡€–ÚUNIQUE‚Ìƒ`ƒFƒbƒN
-				// 1ƒL[ƒ[ƒh–Ú‚ªUNIQUE‚Å‚ ‚èA‚©‚Â2’PŒê–Ú‚ÌÚ“ª«‚ªŠ‡ŒÊ‚ÌŠJn‚Å‚ ‚éê‡A•¡‡UNIQUE‚Å‚ ‚é
+				// è¤‡åˆé …ç›®UNIQUEã®ãƒã‚§ãƒƒã‚¯
+				// 1ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ç›®ãŒUNIQUEã§ã‚ã‚Šã€ã‹ã¤2å˜èªç›®ã®æ¥é ­è¾ãŒæ‹¬å¼§ã®é–‹å§‹ã§ã‚ã‚‹å ´åˆã€è¤‡åˆUNIQUEã§ã‚ã‚‹
 				if (UNIQUE.equalsIgnoreCase(fieldItems[0])
 						&& fieldItems[1].startsWith("(")) {
-					// •¡‡UNIQUE’è‹`”­Œ© Š‡ŒÊ‚ÌŠJn‚©‚çI‚í‚è‚Ü‚Åæ“¾‚µAƒtƒB[ƒ‹ƒhˆê——‚ğæ“¾
-					// Ÿ‚Ì•Â‚¶Š‡ŒÊ‚ğ”­Œ©‚·‚é‚Ü‚ÅŒã‘±‚ÌField‚ğ˜AŒ‹(split(",")À{‚Ì‚½‚ßAUNIQUEƒL[ƒtƒB[ƒ‹ƒh‚ª•ªŠ„‚³‚ê‚Ä‚¢‚éB
+					// è¤‡åˆUNIQUEå®šç¾©ç™ºè¦‹ æ‹¬å¼§ã®é–‹å§‹ã‹ã‚‰çµ‚ã‚ã‚Šã¾ã§å–å¾—ã—ã€ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ä¸€è¦§ã‚’å–å¾—
+					// æ¬¡ã®é–‰ã˜æ‹¬å¼§ã‚’ç™ºè¦‹ã™ã‚‹ã¾ã§å¾Œç¶šã®Fieldã‚’é€£çµ(split(",")å®Ÿæ–½ã®ãŸã‚ã€UNIQUEã‚­ãƒ¼ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãŒåˆ†å‰²ã•ã‚Œã¦ã„ã‚‹ã€‚
 					StringBuilder uniqueFieldsBuilder = new StringBuilder();
 					uniqueFieldsBuilder.append(fieldItems[1]);
 					if (fieldItems[1].indexOf(")") == -1) { 
-						// ŠY“–ƒtƒB[ƒ‹ƒhã‚ÅUNIQUEƒL[’è‹`‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¢ê‡
-						// I—¹Š‡ŒÊ‚ªŒ»‚ê‚é‚Ü‚ÅAˆÈ~‚Ìfield‚ğ“Ç‚İ‚ŞB
+						// è©²å½“ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ä¸Šã§UNIQUEã‚­ãƒ¼å®šç¾©ãŒå®Œäº†ã—ã¦ã„ãªã„å ´åˆ
+						// çµ‚äº†æ‹¬å¼§ãŒç¾ã‚Œã‚‹ã¾ã§ã€ä»¥é™ã®fieldã‚’èª­ã¿è¾¼ã‚€ã€‚
 						int j = i + 1;
 						for (; j < fields.length; j++) {
 							if (fields[j].indexOf(")") != -1) {
-								// •Â‚¶Š‡ŒÊ‚ªŒ©‚Â‚©‚Á‚½‚©‚çŠY“–Field‚Å•¡‡UNIQUE’è‹`‚ªI‚í‚èB
+								// é–‰ã˜æ‹¬å¼§ãŒè¦‹ã¤ã‹ã£ãŸã‹ã‚‰è©²å½“Fieldã§è¤‡åˆUNIQUEå®šç¾©ãŒçµ‚ã‚ã‚Šã€‚
 								uniqueFieldsBuilder.append(",").append(fields[j].substring(0, fields[j].indexOf(")") + 1));
 								break;
 							}
 							uniqueFieldsBuilder.append(",").append(fields[j]);
 						}
-						// •¡‡UNIQUE‚Ì’è‹`•”‚ÍˆÈ~“Ç‚İ”ò‚Î‚·B
+						// è¤‡åˆUNIQUEã®å®šç¾©éƒ¨ã¯ä»¥é™èª­ã¿é£›ã°ã™ã€‚
 						i = j;
 					}
 					
@@ -179,7 +179,7 @@ public class SQLParser {
 				}
 			}
 			
-			// SqlCommand‚ğì¬
+			// SqlCommandã‚’ä½œæˆ
 			sqlCommand = new CreateTableSqlCommand(sql, tableName, uniqueKeyList);
 		} else {
 			sqlCommand = new SqlCommand(sql);
@@ -189,18 +189,18 @@ public class SQLParser {
 	}
 	
 	/**
-	 * ˆø”‚Éó‚¯æ‚Á‚½SQLƒRƒ}ƒ“ƒh‚ğSQL‹æØ‚è•¶š‚Å•ªŠ„‚µAListŒ`®‚Å•Ô‹p‚µ‚Ü‚·B<br />
-	 * ŒÂX‚ÌSQL•ª‚Í––”ö‚ÉSQL‹æØ‚è•¶š‚ğŠÜ‚ñ‚¾ó‘Ô‚Å•ªŠ„‚³‚ê‚Ü‚·B<br />
-	 * SQL•¶‚ğ•ª—£‚·‚éÛ‚ÍSQL‚ÌDelimiter‚ğ—˜—p‚µ‚Ü‚·‚ªAˆÈ‰º‚ÌƒuƒƒbƒN‚ÉˆÊ’u‚·‚éDelimiter‚Í”F¯‚³‚ê‚Ü‚¹‚ñB
+	 * å¼•æ•°ã«å—ã‘å–ã£ãŸSQLã‚³ãƒãƒ³ãƒ‰ã‚’SQLåŒºåˆ‡ã‚Šæ–‡å­—ã§åˆ†å‰²ã—ã€Listå½¢å¼ã§è¿”å´ã—ã¾ã™ã€‚<br />
+	 * å€‹ã€…ã®SQLåˆ†ã¯æœ«å°¾ã«SQLåŒºåˆ‡ã‚Šæ–‡å­—ã‚’å«ã‚“ã çŠ¶æ…‹ã§åˆ†å‰²ã•ã‚Œã¾ã™ã€‚<br />
+	 * SQLæ–‡ã‚’åˆ†é›¢ã™ã‚‹éš›ã¯SQLã®Delimiterã‚’åˆ©ç”¨ã—ã¾ã™ãŒã€ä»¥ä¸‹ã®ãƒ–ãƒ­ãƒƒã‚¯ã«ä½ç½®ã™ã‚‹Delimiterã¯èªè­˜ã•ã‚Œã¾ã›ã‚“ã€‚
 	 * <pre>
-	 * 1DƒRƒƒ“ƒg•¶’†‚ÌDelimiteri--ƒuƒƒbƒN“àA‚à‚µ‚­‚Í\/* *\/ƒuƒƒbƒN“à
-	 * 2DƒVƒ“ƒOƒ‹ƒNƒH[ƒgA‚Ü‚½‚Íƒ_ƒuƒ‹ƒNƒH[ƒg“à‚ÌDelimiteri—á‚¦‚ÎInsert‚Ì‰Šú’l‚Æ‚µ‚Äİ’è‚³‚ê‚½Delimiter
+	 * 1ï¼ã‚³ãƒ¡ãƒ³ãƒˆæ–‡ä¸­ã®Delimiterï¼ˆ--ãƒ–ãƒ­ãƒƒã‚¯å†…ã€ã‚‚ã—ãã¯\/* *\/ãƒ–ãƒ­ãƒƒã‚¯å†…
+	 * 2ï¼ã‚·ãƒ³ã‚°ãƒ«ã‚¯ã‚©ãƒ¼ãƒˆã€ã¾ãŸã¯ãƒ€ãƒ–ãƒ«ã‚¯ã‚©ãƒ¼ãƒˆå†…ã®Delimiterï¼ˆä¾‹ãˆã°Insertæ™‚ã®åˆæœŸå€¤ã¨ã—ã¦è¨­å®šã•ã‚ŒãŸDelimiter
 	 * </pre>
-	 * @param targetSqlCommands •ÏŠ·‘ÎÛ‚ÌSQL•¶
-	 * @return •ªŠ„Œã‚ÌSQL•¶
+	 * @param targetSqlCommands å¤‰æ›å¯¾è±¡ã®SQLæ–‡
+	 * @return åˆ†å‰²å¾Œã®SQLæ–‡
 	 */
 	private List<String> splitSqlCommands(String targetSqlCommands) {
-		// TODO ƒRƒƒ“ƒg‘Î‰ CreateUniqueIndex‘O‚ÌƒZƒ~ƒRƒƒ“‚Í‚±‚±‚ÌƒRƒƒ“ƒg‘Î‰‚ªI‚í‚ê‚Î‚¢‚¯‚éB
+		// TODO ã‚³ãƒ¡ãƒ³ãƒˆå¯¾å¿œ CreateUniqueIndexå‰ã®ã‚»ãƒŸã‚³ãƒ­ãƒ³ã¯ã“ã“ã®ã‚³ãƒ¡ãƒ³ãƒˆå¯¾å¿œãŒçµ‚ã‚ã‚Œã°ã„ã‘ã‚‹ã€‚
 		List<String> sqlCommandList = new ArrayList<String>();
 		String[] splitSqlCommands = targetSqlCommands.split(SQL_DELIMITER);
 		for (String command : splitSqlCommands) {

@@ -9,7 +9,7 @@ import java.util.Set;
 import uidxgenerator.builder.CreateIndexSqlBuilder;
 
 /**
- * SQL‘S‘Ì‚ğ•Û‚·‚éDomain‚Å‚·B
+ * SQLå…¨ä½“ã‚’ä¿æŒã™ã‚‹Domainã§ã™ã€‚
  * @author W.Ryozo
  * @version 1.0
  */
@@ -17,11 +17,11 @@ public class EntireSQL implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	/** SQL•¶‚ğ\¬‚·‚éSQL‚ÌƒŠƒXƒg */
+	/** SQLæ–‡ã‚’æ§‹æˆã™ã‚‹SQLã®ãƒªã‚¹ãƒˆ */
 	private List<SqlCommand> sqlCommandList = new ArrayList<SqlCommand>();
 	
 	/**
-	 * SQL•¶‚ğ’Ç‰Á‚µ‚Ü‚·B
+	 * SQLæ–‡ã‚’è¿½åŠ ã—ã¾ã™ã€‚
 	 * @param command
 	 */
 	public void addSqlCommand(SqlCommand command) {
@@ -29,29 +29,29 @@ public class EntireSQL implements Serializable {
 	}
 	
 	/**
-	 * SQL•¶‚ğæ“¾‚µ‚Ü‚·B
-	 * @return@SQL•¶‚Ìˆê——
+	 * SQLæ–‡ã‚’å–å¾—ã—ã¾ã™ã€‚
+	 * @returnã€€SQLæ–‡ã®ä¸€è¦§
 	 */
 	public List<SqlCommand> getSqlCommandList() {
 		return sqlCommandList;
 	}
 	
 	/**
-	 * ©g‚ª•Û‚·‚éSQL•¶’†‚Ì‘SUNIQUE§–ñ‚É‘Î‚µ‚Äˆø”‚Éw’è‚³‚ê‚½UNIQUEğŒ‚ğ’Ç‰Á‚µ‚Ü‚·B<br />
+	 * è‡ªèº«ãŒä¿æŒã™ã‚‹SQLæ–‡ä¸­ã®å…¨UNIQUEåˆ¶ç´„ã«å¯¾ã—ã¦å¼•æ•°ã«æŒ‡å®šã•ã‚ŒãŸUNIQUEæ¡ä»¶ã‚’è¿½åŠ ã—ã¾ã™ã€‚<br />
 	 * TODO javadoc
 	 * <pre>
-	 * [SQL‚Ì•ÏX“à—e]
-	 *  1.©g‚ª•Û‚·‚é‘SCreateTable•¶‚É’è‹`‚³‚ê‚½UNIQUE§–ñ’è‹`‚ğíœ
-	 *  2D1‚É‚Äˆø”‚Éw’è‚³‚ê‚½ğŒ‚ğİ’è‚µ‚½Create Unique Index•¶‚ğ’Ç‰Á
+	 * [SQLã®å¤‰æ›´å†…å®¹]
+	 *  1.è‡ªèº«ãŒä¿æŒã™ã‚‹å…¨CreateTableæ–‡ã«å®šç¾©ã•ã‚ŒãŸUNIQUEåˆ¶ç´„å®šç¾©ã‚’å‰Šé™¤
+	 *  2ï¼1ã«ã¦å¼•æ•°ã«æŒ‡å®šã•ã‚ŒãŸæ¡ä»¶ã‚’è¨­å®šã—ãŸCreate Unique Indexæ–‡ã‚’è¿½åŠ 
 	 * </pre>
-	 * @param conditionMap UNIQUE§–ñ‚É‘Î‚µ‚Ä’Ç‰Á‚·‚éğŒiKey:ƒJƒ‰ƒ€–¼AValue:ğŒ’l)
+	 * @param conditionMap UNIQUEåˆ¶ç´„ã«å¯¾ã—ã¦è¿½åŠ ã™ã‚‹æ¡ä»¶ï¼ˆKey:ã‚«ãƒ©ãƒ åã€Value:æ¡ä»¶å€¤)
 	 */
 	public void addConditionToAllUniqueConstraint(Map<String, String> conditionMap) {
 		List<SqlCommand> addSqlCommandList = new ArrayList<SqlCommand>();
 		for (SqlCommand sqlCommand : sqlCommandList) {
 			if (sqlCommand instanceof CreateTableSqlCommand) {
-				// TODO ƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒO ‚±‚Ìif•¶‚ÍÁ‚¹‚È‚¢‚©H
-				// ŒÂX‚ÌCreateTable•¶‚ÌUniqueIndex§–ñ‚ğíœ
+				// TODO ãƒªãƒ•ã‚¡ã‚¯ã‚¿ãƒªãƒ³ã‚° ã“ã®ifæ–‡ã¯æ¶ˆã›ãªã„ã‹ï¼Ÿ
+				// å€‹ã€…ã®CreateTableæ–‡ã®UniqueIndexåˆ¶ç´„ã‚’å‰Šé™¤
 				CreateTableSqlCommand createTableSql = (CreateTableSqlCommand) sqlCommand;
 				createTableSql.removeUniqueConstraints();
 
@@ -67,7 +67,7 @@ public class EntireSQL implements Serializable {
 						}
 					}
 
-					// ì¬‚µ‚½CreateIndex•¶‚ğSQL‚É’Ç‰Á
+					// ä½œæˆã—ãŸCreateIndexæ–‡ã‚’SQLã«è¿½åŠ 
 					addSqlCommandList.add(indexBuilder.build());
 				}
 			}
@@ -79,7 +79,7 @@ public class EntireSQL implements Serializable {
 	}
 	
 	/**
-	 * SQL•¶‚ğ•¶š—ñ•\Œ»‚Å•Ô‹p‚µ‚Ü‚·B
+	 * SQLæ–‡ã‚’æ–‡å­—åˆ—è¡¨ç¾ã§è¿”å´ã—ã¾ã™ã€‚
 	 */
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

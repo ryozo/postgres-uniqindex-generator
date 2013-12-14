@@ -5,7 +5,7 @@ import java.io.Serializable;
 import uidxgenerator.util.StringUtil;
 
 /**
- * SQL•¶‚ğ•\‚·Domain‚Å‚·B
+ * SQLæ–‡ã‚’è¡¨ã™Domainã§ã™ã€‚
  * @author W.Ryozo
  * @version 1.0
  */
@@ -13,13 +13,13 @@ public class SqlCommand implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	/** SQL–{•¶ */
+	/** SQLæœ¬æ–‡ */
 	private String command;
 	
 	/**
-	 * SQL•¶‚ÆSQLí•Ê‚ğ—˜—p‚µ‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µ‚Ü‚·B
-	 * @param command SQL•¶
-	 * @param type SQL‚Ìí•Ê
+	 * SQLæ–‡ã¨SQLç¨®åˆ¥ã‚’åˆ©ç”¨ã—ã¦ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã¾ã™ã€‚
+	 * @param command SQLæ–‡
+	 * @param type SQLã®ç¨®åˆ¥
 	 */
 	public SqlCommand(String command) {
 		if (StringUtil.isNullOrEmpty(command)) {
@@ -29,7 +29,7 @@ public class SqlCommand implements Serializable {
 	}
 	
 	/**
-	 * SQL–{•¶‚ğæ“¾‚µ‚Ü‚·B
+	 * SQLæœ¬æ–‡ã‚’å–å¾—ã—ã¾ã™ã€‚
 	 * @return
 	 */
 	public String getSqlCommand() {

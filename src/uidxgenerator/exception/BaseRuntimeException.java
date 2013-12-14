@@ -1,7 +1,7 @@
 package uidxgenerator.exception;
 
 /**
- * 当PJのベースとなる例外クラスです。
+ * 蠖撤J縺ｮ繝吶�ｼ繧ｹ縺ｨ縺ｪ繧倶ｾ句､悶け繝ｩ繧ｹ縺ｧ縺吶�
  * @author W.Ryozo
  * @version 1.0
  */

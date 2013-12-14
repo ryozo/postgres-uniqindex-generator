@@ -1,28 +1,28 @@
 package uidxgenerator.util;
 
 /**
- * StringŠÖ˜A‚ÌUtilƒNƒ‰ƒX‚Å‚·B
+ * Stringé–¢é€£ã®Utilã‚¯ãƒ©ã‚¹ã§ã™ã€‚
  * @author W.Ryozo
  * @version 1.0
  */
 public class StringUtil {
 	
 	/**
-	 * ˆø”‚Ì•¶š—ñ‚ªnull‚Ü‚½‚Í‹ó•¶š‚Å‚ ‚é‚±‚Æ‚ğƒ`ƒFƒbƒN‚µ‚Ü‚·B
-	 * @param target ƒ`ƒFƒbƒN‘ÎÛ‚Ì•¶š—ñ
-	 * @return ƒ`ƒFƒbƒNŒ‹‰Ê
+	 * å¼•æ•°ã®æ–‡å­—åˆ—ãŒnullã¾ãŸã¯ç©ºæ–‡å­—ã§ã‚ã‚‹ã“ã¨ã‚’ãƒã‚§ãƒƒã‚¯ã—ã¾ã™ã€‚
+	 * @param target ãƒã‚§ãƒƒã‚¯å¯¾è±¡ã®æ–‡å­—åˆ—
+	 * @return ãƒã‚§ãƒƒã‚¯çµæœ
 	 */
 	public static boolean isNullOrEmpty(String target) {
 		return target == null || target.length() == 0;
 	}
 	
 	/**
-	 * ‹ó”’•¶š(”¼ŠpA‘SŠpƒXƒy[ƒXAƒ^ƒuA‰üsA•œ‹Aj‚ğTrim‚µ‚Ü‚·B
-	 * @param target trim‘ÎÛ‚Ì•¶š—ñ
-	 * @return TrimŒã•¶š—ñ
+	 * ç©ºç™½æ–‡å­—(åŠè§’ã€å…¨è§’ã‚¹ãƒšãƒ¼ã‚¹ã€ã‚¿ãƒ–ã€æ”¹è¡Œã€å¾©å¸°ï¼‰ã‚’Trimã—ã¾ã™ã€‚
+	 * @param target trimå¯¾è±¡ã®æ–‡å­—åˆ—
+	 * @return Trimå¾Œæ–‡å­—åˆ—
 	 */
 	public static String trimWithSpaceString(String target) {
-		// TODO ³‹K•\Œ»‚Ìƒ}ƒbƒ`‚ğ’Ç‰ÁB
+		// TODO æ­£è¦è¡¨ç¾ã®ãƒãƒƒãƒã‚’è¿½åŠ ã€‚
 		return target.trim();
 	}
 

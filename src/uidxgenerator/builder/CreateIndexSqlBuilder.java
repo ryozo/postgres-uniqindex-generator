@@ -12,7 +12,7 @@ import uidxgenerator.domain.SqlCommand;
 import uidxgenerator.util.StringUtil;
 
 /**
- * CreateUniqueIndex•¶‚ÌBuilderƒNƒ‰ƒX‚Å‚·B<br />
+ * CreateUniqueIndexæ–‡ã®Builderã‚¯ãƒ©ã‚¹ã§ã™ã€‚<br />
  * 
  * 
  * @author W.Ryozo
@@ -20,41 +20,41 @@ import uidxgenerator.util.StringUtil;
  */
 public class CreateIndexSqlBuilder {
 	
-	/** SQL•¶‚Ìƒx[ƒX */
+	/** SQLæ–‡ã®ãƒ™ãƒ¼ã‚¹ */
 	private static final String SQL_BASE = "CREATE UNIQUE INDEX {IDX_NAME} ON {TABLE_NAME} ({KEY_LIST})";
 	private static final String SQL_WHERE = " WHERE ";
 	private static final String SQL_CONDITION = "{FIELD_NAME} = {FIELD_VALUE}";
 	private static final String SQL_AND = "AND";
 	private static final String SQL_ISNULL = "IS NULL";
-	/** ’uŠ·•¶š—ñ */
+	/** ç½®æ›æ–‡å­—åˆ— */
 	private static final String REPLACE_STR_INDEX_NAME = "{IDX_NAME}";
 	private static final String REPLACE_STR_TABLE_NAME = "{TABLE_NAME}";
 	private static final String REPLACE_STR_KEY_LIST = "{KEY_LIST}";
 	private static final String REPLACE_STR_FIELD_NAME = "{FIELD_NAME}";
 	private static final String REPLACE_STR_FIELD_VALUE = "{FIELD_VALUE}";
 	
-	/** Index–¼Ì */
-	// TODO index–¼‚Íw’è‚à‚Å‚«‚é‚µAw’è‚µ‚È‚­‚Ä‚à‚¢‚¢iƒfƒtƒHƒ‹ƒg’l‚Ìİ’èj‚·‚éB
+	/** Indexåç§° */
+	// TODO indexåã¯æŒ‡å®šã‚‚ã§ãã‚‹ã—ã€æŒ‡å®šã—ãªãã¦ã‚‚ã„ã„ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã®è¨­å®šï¼‰ã™ã‚‹ã€‚
 	private String indexName;
-	/** ƒe[ƒuƒ‹–¼Ì */
+	/** ãƒ†ãƒ¼ãƒ–ãƒ«åç§° */
 	private String tableName;
-	/** ˆêˆÓƒL[€–Ú */
+	/** ä¸€æ„ã‚­ãƒ¼é …ç›® */
 	private String[] keyList;
-	/** ˆêˆÓğŒ */
+	/** ä¸€æ„æ¡ä»¶ */
 	private Map<String, String> conditionMap = new LinkedHashMap<String, String>();
 	
 	/**
-	 * ƒCƒ“ƒfƒbƒNƒX–¼Aƒe[ƒuƒ‹–¼AƒCƒ“ƒfƒbƒNƒXƒtƒB[ƒ‹ƒh–¼‚ğ—˜—p‚µ‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µ‚Ü‚·B
-	 * @param indexName ì¬‘ÎÛ‚ÌƒCƒ“ƒfƒbƒNƒX–¼Ì
-	 * @param tableName ƒCƒ“ƒfƒbƒNƒX•t—^‘ÎÛ‚Ìƒe[ƒuƒ‹–¼
-	 * @param keyList ƒCƒ“ƒfƒbƒNƒX‚ğ•t—^‚·‚éƒJƒ‰ƒ€–¼i•¡‡ƒ†ƒj[ƒN‚Ìê‡A•¡”w’èj
+	 * ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹åã€ãƒ†ãƒ¼ãƒ–ãƒ«åã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰åã‚’åˆ©ç”¨ã—ã¦ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã¾ã™ã€‚
+	 * @param indexName ä½œæˆå¯¾è±¡ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹åç§°
+	 * @param tableName ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä»˜ä¸å¯¾è±¡ã®ãƒ†ãƒ¼ãƒ–ãƒ«å
+	 * @param keyList ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä»˜ä¸ã™ã‚‹ã‚«ãƒ©ãƒ åï¼ˆè¤‡åˆãƒ¦ãƒ‹ãƒ¼ã‚¯ã®å ´åˆã€è¤‡æ•°æŒ‡å®šï¼‰
 	 */
 	public CreateIndexSqlBuilder(String indexName, String tableName, String... keyList) {
 		if (StringUtil.isNullOrEmpty(indexName) 
 				|| StringUtil.isNullOrEmpty(tableName)
 				|| keyList == null
 				|| keyList.length == 0) {
-			throw new IllegalArgumentException("ˆø”w’è‚ª•s³‚Å‚·Bˆø”‚ğ‹ó‚Æ‚·‚é‚±‚Æ‚Í‹–‚³‚ê‚Ü‚¹‚ñB");
+			throw new IllegalArgumentException("å¼•æ•°æŒ‡å®šãŒä¸æ­£ã§ã™ã€‚å¼•æ•°ã‚’ç©ºã¨ã™ã‚‹ã“ã¨ã¯è¨±ã•ã‚Œã¾ã›ã‚“ã€‚");
 		}
 		this.indexName = indexName;
 		this.tableName = tableName;
@@ -62,40 +62,40 @@ public class CreateIndexSqlBuilder {
 	}
 	
 	/**
-	 * “–ƒCƒ“ƒfƒbƒNƒX‚ª—LŒø‚Æ‚È‚éğŒ‚ğİ’è‚µ‚Ü‚·B<br />
-	 * ğŒ’l‚ªnull‚Ìê‡AIsNull•¶‚ğo—Í‚µ‚Ü‚·B
-	 * @param fieldName ğŒ‚Æ‚·‚éƒtƒB[ƒ‹ƒh–¼
-	 * @param fieldValue ğŒ’l
+	 * å½“ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒæœ‰åŠ¹ã¨ãªã‚‹æ¡ä»¶ã‚’è¨­å®šã—ã¾ã™ã€‚<br />
+	 * æ¡ä»¶å€¤ãŒnullã®å ´åˆã€IsNullæ–‡ã‚’å‡ºåŠ›ã—ã¾ã™ã€‚
+	 * @param fieldName æ¡ä»¶ã¨ã™ã‚‹ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å
+	 * @param fieldValue æ¡ä»¶å€¤
 	 */
 	public void setIndexCondition(String fieldName, String fieldValue) {
 		if (StringUtil.isNullOrEmpty(fieldName)) {
-			throw new IllegalArgumentException("UniqueIndex‚ÌğŒƒtƒB[ƒ‹ƒh‚ªNull‚Å‚·");
+			throw new IllegalArgumentException("UniqueIndexã®æ¡ä»¶ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãŒNullã§ã™");
 		}
 		if (fieldValue == null) {
-			// PostgreSQLŒü‚¯‚ÌSQL‚ğ”­s‚·‚éê‡A‚±‚Ì”»’è®‚ÉisEmpty‚ğ’Ç‰Á‚µ‚Ä‚Í‚È‚ç‚È‚¢B
-			// PostgreSQL‚Í‹ó•¶š‚ğ”F¯‚·‚é‚½‚ßASQLã‚Å[WHERE KEY = ""]‚ğw’è‰Â”\‚Å‚ ‚éB
-			// ‹ó•¶š‚ğISNULL‚É•ÏŠ·‚·‚é‚ÆˆÓ–¡‚ª•Ï‚í‚Á‚Ä‚µ‚Ü‚¤B
-			// i•ÏŠ·ŒãSQL‚ªOracle‚Å‚ ‚éê‡AOracle‚Í‹ó•¶š‚ğ”F¯‚Å‚«‚È‚¢‚½‚ßA‹ó•¶š‚ğISNULL’uŠ·‚·‚×‚«‚Å‚ ‚éB
+			// PostgreSQLå‘ã‘ã®SQLã‚’ç™ºè¡Œã™ã‚‹å ´åˆã€ã“ã®åˆ¤å®šå¼ã«isEmptyã‚’è¿½åŠ ã—ã¦ã¯ãªã‚‰ãªã„ã€‚
+			// PostgreSQLã¯ç©ºæ–‡å­—ã‚’èªè­˜ã™ã‚‹ãŸã‚ã€SQLä¸Šã§[WHERE KEY = ""]ã‚’æŒ‡å®šå¯èƒ½ã§ã‚ã‚‹ã€‚
+			// ç©ºæ–‡å­—ã‚’ISNULLã«å¤‰æ›ã™ã‚‹ã¨æ„å‘³ãŒå¤‰ã‚ã£ã¦ã—ã¾ã†ã€‚
+			// ï¼ˆå¤‰æ›å¾ŒSQLãŒOracleã§ã‚ã‚‹å ´åˆã€Oracleã¯ç©ºæ–‡å­—ã‚’èªè­˜ã§ããªã„ãŸã‚ã€ç©ºæ–‡å­—ã‚’ISNULLç½®æ›ã™ã¹ãã§ã‚ã‚‹ã€‚
 			fieldValue = SQL_ISNULL;
 		}
 		conditionMap.put(fieldName, fieldValue);
 	}
 	
 	/**
-	 * “–ƒCƒ“ƒfƒbƒNƒX‚ª—LŒø‚Æ‚È‚éğŒ‚ğBoolean’l‚Åw’è‚µ‚Ü‚·B<br />
+	 * å½“ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒæœ‰åŠ¹ã¨ãªã‚‹æ¡ä»¶ã‚’Booleanå€¤ã§æŒ‡å®šã—ã¾ã™ã€‚<br />
 	 * @param fieldName
 	 * @param fieldValue
 	 */
 	public void setIndexCondition(String fieldName, boolean fieldValue) {
 		if (StringUtil.isNullOrEmpty(fieldName)) {
-			throw new IllegalArgumentException("UniqueIndex‚ÌğŒƒtƒB[ƒ‹ƒh‚ª‚Å‚·");
+			throw new IllegalArgumentException("UniqueIndexã®æ¡ä»¶ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãŒã§ã™");
 		}
 		conditionMap.put(fieldName, Boolean.toString(fieldValue));
 	}
 
 	/**
-	 * İ’è‚³‚ê‚½“à—e‚ÉŠî‚Ã‚«CreateUniqueIndex•¶‚ğì¬‚µ‚Ü‚·B
-	 * @return CreateUniqueIndex•¶‚ğ•Û‚·‚éSqlCommand
+	 * è¨­å®šã•ã‚ŒãŸå†…å®¹ã«åŸºã¥ãCreateUniqueIndexæ–‡ã‚’ä½œæˆã—ã¾ã™ã€‚
+	 * @return CreateUniqueIndexæ–‡ã‚’ä¿æŒã™ã‚‹SqlCommand
 	 */
 	public SqlCommand build() {
 		StringBuilder sqlBuilder = new StringBuilder();
@@ -133,7 +133,7 @@ public class CreateIndexSqlBuilder {
 		}
 		
 		sqlBuilder.append(SQL_DELIMITER);
-		// TODO ‰üsƒR[ƒh‚ğ•ÏX‚·‚é(ER-MASTER‚Í‚Ç‚ÌŠÂ‹«‚Å‚ ‚Á‚Ä‚à‰üsƒR[ƒh‚ğCRLF‚Æ‚·‚éH
+		// TODO æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ›´ã™ã‚‹(ER-MASTERã¯ã©ã®ç’°å¢ƒã§ã‚ã£ã¦ã‚‚æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã‚’CRLFã¨ã™ã‚‹ï¼Ÿ
 		sqlBuilder.append(System.getProperty("line.separator"));
 		
 		SqlCommand command = new SqlCommand(sqlBuilder.toString());

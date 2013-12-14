@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * CreateTable•¶‚ğ•\‚·Domain‚Å‚·B
+ * CreateTableæ–‡ã‚’è¡¨ã™Domainã§ã™ã€‚
  * @author W.Ryozo
  * @version 1.0
  */
@@ -15,14 +15,14 @@ public class CreateTableSqlCommand extends SqlCommand {
 
 	private static final long serialVersionUID = 1L;
 	
-	/** ì¬‘ÎÛ‚Ìƒe[ƒuƒ‹–¼ */
+	/** ä½œæˆå¯¾è±¡ã®ãƒ†ãƒ¼ãƒ–ãƒ«å */
 	private String createTableName;
 	
 	/**
-	 * Unique§–ñ•t—^‘ÎÛ‚Ì€–Úˆê——B<br />
-	 * UNIQUE‘ÎÛ‚Æ‚·‚éƒJƒ‰ƒ€–¼‚Ìˆê——‚ğ•Û‚·‚éSet‚Å\¬‚³‚ê‚éB<br />
-	 * ’PˆêUNIQUE‚Ìê‡‚ÍSet‚Í1—v‘f‚Ì‚İ‚Â‚ªA•¡‡UNIQUE‚Ìê‡A
-	 * Set‚ÍUNIQUEƒL[‚ğ\¬‚·‚é‚·‚×‚Ä‚ÌƒJƒ‰ƒ€–¼‚ğ•Û‚·‚éB
+	 * Uniqueåˆ¶ç´„ä»˜ä¸å¯¾è±¡ã®é …ç›®ä¸€è¦§ã€‚<br />
+	 * UNIQUEå¯¾è±¡ã¨ã™ã‚‹ã‚«ãƒ©ãƒ åã®ä¸€è¦§ã‚’ä¿æŒã™ã‚‹Setã§æ§‹æˆã•ã‚Œã‚‹ã€‚<br />
+	 * å˜ä¸€UNIQUEã®å ´åˆã¯Setã¯1è¦ç´ ã®ã¿æŒã¤ãŒã€è¤‡åˆUNIQUEã®å ´åˆã€
+	 * Setã¯UNIQUEã‚­ãƒ¼ã‚’æ§‹æˆã™ã‚‹ã™ã¹ã¦ã®ã‚«ãƒ©ãƒ åã‚’ä¿æŒã™ã‚‹ã€‚
 	 */
 	private List<Set<String>> uniqueKeyList;
 	
@@ -33,23 +33,23 @@ public class CreateTableSqlCommand extends SqlCommand {
 	}
 	
 	/**
-	 * “–CreateTable‚ªì¬‚·‚éTABLE–¼Ì‚ğ•Ô‹p‚µ‚Ü‚·B
-	 * @return TABLE–¼Ì
+	 * å½“CreateTableãŒä½œæˆã™ã‚‹TABLEåç§°ã‚’è¿”å´ã—ã¾ã™ã€‚
+	 * @return TABLEåç§°
 	 */
 	public String getCreateTableName() {
 		return createTableName;
 	}
 	
 	/**
-	 * “–CreateTable‚ª•Û‚·‚éUNIQUE§–ñ€–Ú‚Ìˆê——‚ğ•Ô‹p‚µ‚Ü‚·B
-	 * @return UNIQUE‚Æ‚È‚é€–Úˆê——
+	 * å½“CreateTableãŒä¿æŒã™ã‚‹UNIQUEåˆ¶ç´„é …ç›®ã®ä¸€è¦§ã‚’è¿”å´ã—ã¾ã™ã€‚
+	 * @return UNIQUEã¨ãªã‚‹é …ç›®ä¸€è¦§
 	 */
 	public List<Set<String>> getUniqueKeyList() {
 		return uniqueKeyList;
 	}
 	
 	/**
-	 * TODO ‚±‚±‚É’è‹`‚µ‚È‚¢BêŠ‚ğ•Ï‚¦‚é‚±‚ÆB
+	 * TODO ã“ã“ã«å®šç¾©ã—ãªã„ã€‚å ´æ‰€ã‚’å¤‰ãˆã‚‹ã“ã¨ã€‚
 	 */
 	public void removeUniqueConstraints() {
 		BufferedReader reader = null;
@@ -62,26 +62,26 @@ public class CreateTableSqlCommand extends SqlCommand {
 					sqlBuilder.append(line).append(System.getProperty("line.separator"));
 				} else {
 					if (line.trim().toUpperCase().startsWith("UNIQUE")) {
-						// s“ª‚ÉUnique‚ª‘¶İ‚·‚éê‡‚Í‚»‚Ìs©‘Ì–³‹‚·‚éB
+						// è¡Œé ­ã«UniqueãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯ãã®è¡Œè‡ªä½“ç„¡è¦–ã™ã‚‹ã€‚
 						continue;
 					}
 					sqlBuilder.append(line.replaceAll("(?i) UNIQUE", "")).append(System.getProperty("line.separator"));
 				}
 			}
 		} catch (IOException ioe) {
-			// TODO —áŠO’è‹`
+			// TODO ä¾‹å¤–å®šç¾©
 			throw new RuntimeException(ioe);
 		} finally {
 			if (reader != null) {
 				try {
 					reader.close();
 				} catch (IOException ioe) {
-					// ‰½‚à‚µ‚È‚¢BiStringReader‚¾‚©‚çj
+					// ä½•ã‚‚ã—ãªã„ã€‚ï¼ˆStringReaderã ã‹ã‚‰ï¼‰
 				}
 			}
 		}
 		
-		// TODO command‚Ì’u‚«Š·‚¦B
+		// TODO commandã®ç½®ãæ›ãˆã€‚
 	}
 
 }
