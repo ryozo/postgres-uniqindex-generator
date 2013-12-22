@@ -14,7 +14,7 @@ public class SqlCommand implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/** SQL本文 */
-	private String command;
+	protected String command;
 	
 	/**
 	 * SQL文とSQL種別を利用してインスタンスを作成します。

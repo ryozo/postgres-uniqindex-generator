@@ -6,6 +6,9 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Set;
 
+import uidxgenerator.parser.SQLStateManager;
+import static uidxgenerator.constants.SqlConstants.UNIQUE;
+
 /**
  * CreateTable文を表すDomainです。
  * @author W.Ryozo
@@ -49,19 +52,20 @@ public class CreateTableSqlCommand extends SqlCommand {
 	}
 	
 	/**
-	 * TODO ここに定義しない。場所を変えること。
+	 * TODO javadoc
 	 */
 	public void removeUniqueConstraints() {
-		BufferedReader reader = null;
 		StringBuilder sqlBuilder = new StringBuilder();
-		try {
-			reader = new BufferedReader(new StringReader(this.getSqlCommand()));
+		try (BufferedReader reader = new BufferedReader(new StringReader(this.getSqlCommand()))){
+			SQLStateManager manager = new SQLStateManager();
 			String line;
 			while ((line = reader.readLine()) != null) {
-				if (line.toUpperCase().indexOf("UNIQUE") == -1) {
+				int uniqueIndex = line.toUpperCase().indexOf(UNIQUE);
+				if (uniqueIndex == -1) {
+					manager.updateStateWithNewLine(line);
 					sqlBuilder.append(line).append(System.getProperty("line.separator"));
 				} else {
-					if (line.trim().toUpperCase().startsWith("UNIQUE")) {
+					if (line.trim().toUpperCase().startsWith(UNIQUE)) {
 						// 行頭にUniqueが存在する場合はその行自体無視する。
 						continue;
 					}
@@ -69,19 +73,10 @@ public class CreateTableSqlCommand extends SqlCommand {
 				}
 			}
 		} catch (IOException ioe) {
-			// TODO 例外定義
-			throw new RuntimeException(ioe);
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException ioe) {
-					// 何もしない。（StringReaderだから）
-				}
-			}
+			// 何もしない。StringReaderなのでIOExceptionは発生しない。
 		}
 		
-		// TODO commandの置き換え。
+		this.command = sqlBuilder.toString();
 	}
 
 }
