@@ -223,38 +223,39 @@ public class SQLParser {
 	 * @return 分割後のSQL文
 	 */
 	private List<String> splitSqlCommands(String targetSqlCommands) {
-		// TODO SQL本文の取得までSQLStateManagerに持たせる⇒SQLStateManagerがParserとなる。
 		List<String> sqlCommandList = new ArrayList<>();
 		SQLStateManager manager = new SQLStateManager();
 		try (BufferedReader reader = new BufferedReader(new StringReader(
 				targetSqlCommands))) {
-			String currentLine;
+			String line;
 			StringBuilder sqlBuilder = new StringBuilder();
-			while ((currentLine = reader.readLine()) != null) {
-				int delimiterIndex = currentLine.indexOf(SQL_DELIMITER);
-				if (delimiterIndex >= 0) {
-					String[] sqlBlocks = currentLine.split(SQL_DELIMITER);
-					// TODO　改行コードとかパーサの考え方とかSQLの作り方とか全体的にリファクタリング
-					for (int i = 0; i < sqlBlocks.length; i++) {
-						String sqlBlock = sqlBlocks[i];
-						sqlBuilder.append(sqlBlock);
-						sqlBuilder.append(SQL_DELIMITER);
-						if (i == sqlBlocks.length - 1) {
-							sqlBuilder.append(LINE_SEPARATOR);
-							manager.appendWithNewLine(sqlBlock);
-						} else {
-							manager.appendInSameRow(sqlBlock);
+			while ((line = reader.readLine()) != null) {
+				int delimiterIndex = line.indexOf(SQL_DELIMITER);
+				if (0 <= delimiterIndex) {
+					String[] sqlCandidates = line.split(SQL_DELIMITER);
+					for (int i = 0; i < sqlCandidates.length; i++) {
+						String sqlCandidate = sqlCandidates[i];
+						sqlBuilder.append(sqlCandidate);
+						manager.appendInSameRow(sqlCandidate);
+						
+						if (i < sqlCandidates.length -1) {
+							// 最終要素ではない場合
+							sqlBuilder.append(SQL_DELIMITER);
 						}
 						if (manager.isEffective()) {
 							sqlCommandList.add(sqlBuilder.toString());
 							sqlBuilder = new StringBuilder();
 						}
 					}
-				} else {
-					manager.appendWithNewLine(currentLine);
-					sqlBuilder.append(currentLine);
 					sqlBuilder.append(LINE_SEPARATOR);
+					manager.appendWithNewLine("");
+				} else {
+					sqlBuilder.append(line).append(LINE_SEPARATOR);
+					manager.appendWithNewLine(line);
 				}
+			}
+			if (0 < sqlBuilder.length()) {
+				sqlCommandList.add(sqlBuilder.toString());
 			}
 		} catch (IOException e) {
 			// 何もしない。(StringReaderだからClose時にIOExceptionは発生しない）
