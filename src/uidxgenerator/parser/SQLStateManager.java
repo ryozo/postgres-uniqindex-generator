@@ -29,7 +29,7 @@ public class SQLStateManager {
 	 * 引数に受け取ったSQL断片を行末と見なしてSQLの状態を更新する。
 	 * @param sqlFlagment SQLの断片
 	 */
-	public void updateStateWithNewLine(String sqlFlagment) {
+	public void appendWithNewLine(String sqlFlagment) {
 		updateState(sqlFlagment, true);
 	}
 	
@@ -37,7 +37,7 @@ public class SQLStateManager {
 	 * 引数に受け取ったSQLの断片を行中（SQL断片以後も同行内にSQLが続く）と見なしてSQL状態を更新する。
 	 * @param sqlFlagment SQLの断片
 	 */
-	public void updateStateInSameRow(String sqlFlagment) {
+	public void appendInSameRow(String sqlFlagment) {
 		updateState(sqlFlagment, false);
 	}
 	

@@ -3,11 +3,15 @@ package uidxgenerator.domain;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
+import uidxgenerator.analyzer.SqlParenthesesAnalyzer;
 import uidxgenerator.parser.SQLStateManager;
-import static uidxgenerator.constants.SqlConstants.UNIQUE;
+import uidxgenerator.util.StringUtil;
+import static uidxgenerator.constants.SqlConstants.*;
 
 /**
  * CreateTable文を表すDomainです。
@@ -55,28 +59,117 @@ public class CreateTableSqlCommand extends SqlCommand {
 	 * TODO javadoc
 	 */
 	public void removeUniqueConstraints() {
-		StringBuilder sqlBuilder = new StringBuilder();
-		try (BufferedReader reader = new BufferedReader(new StringReader(this.getSqlCommand()))){
+		//テーブルの項目定義部を取得
+		SqlParenthesesAnalyzer analyzer = new SqlParenthesesAnalyzer();
+		analyzer.analyze(this.getSqlCommand());
+		int startParenses = analyzer.getStartParenthesesIndex();
+		int endParenses = analyzer.getEndParenthesesIndex();
+		if (startParenses < 0 || endParenses < 0) {
+			// TODO Exception修正
+			throw new RuntimeException("SQL構文が不正です。");
+		}
+		String beforeDeclareFieldsSection = this.getSqlCommand().substring(0, startParenses);
+		String declareFieldsSection = this.getSqlCommand().substring(startParenses + 1, endParenses);
+		String afterDeclareFieldsSection = this.getSqlCommand().substring(endParenses);
+		
+		// SQLを個々のフィールド別に分割する。
+		List<String> declareFieldArray = new ArrayList<>();
+		try (BufferedReader reader = new BufferedReader(new StringReader(declareFieldsSection))) {
 			SQLStateManager manager = new SQLStateManager();
+			
+			StringBuilder decFieldBuilder = new StringBuilder();
 			String line;
 			while ((line = reader.readLine()) != null) {
-				int uniqueIndex = line.toUpperCase().indexOf(UNIQUE);
-				if (uniqueIndex == -1) {
-					manager.updateStateWithNewLine(line);
-					sqlBuilder.append(line).append(System.getProperty("line.separator"));
-				} else {
-					if (line.trim().toUpperCase().startsWith(UNIQUE)) {
-						// 行頭にUniqueが存在する場合はその行自体無視する。
-						continue;
+				String[] fieldCandidates = line.split(DECLARE_FIELD_SEPARATOR);
+				for (String fieldCandidate : fieldCandidates) {
+					manager.appendInSameRow(fieldCandidate);
+					if (manager.isEffective()) {
+						decFieldBuilder.append(fieldCandidate);
+						declareFieldArray.add(decFieldBuilder.toString());
+					} else {
+						decFieldBuilder.append(fieldCandidate).append(DECLARE_FIELD_SEPARATOR);
 					}
-					sqlBuilder.append(line.replaceAll("(?i) UNIQUE", "")).append(System.getProperty("line.separator"));
 				}
+
+				decFieldBuilder.append(LINE_SEPARATOR);
+				manager.appendWithNewLine("");
 			}
+			
 		} catch (IOException ioe) {
-			// 何もしない。StringReaderなのでIOExceptionは発生しない。
+			// 処理しない。StringReaderのため、IOExceptionは発生しない。
 		}
 		
-		this.command = sqlBuilder.toString();
-	}
+		ListIterator<String> decFieldsIte = declareFieldArray.listIterator();
+		decFieldsLoop: while (decFieldsIte.hasNext()) {
+			// 該当のフィールド定義部がUNIQUEであるか判定
+			String decField = decFieldsIte.next();
+			
+			String line;
+			try (BufferedReader reader = new BufferedReader(new StringReader(decField))) {
+				StringBuilder noUniqueDecFieldBuilder = new StringBuilder();
+				SQLStateManager manager = new SQLStateManager();
+				decFieldLineLoop: while ((line = reader.readLine()) != null) {
+					int uniqueIndex = line.toUpperCase().indexOf(UNIQUE);
+					if (uniqueIndex < 0) {
+						manager.appendWithNewLine(line);
+						noUniqueDecFieldBuilder.append(line).append(LINE_SEPARATOR);
+						continue decFieldLineLoop;
+					}
+					// 現在評価する行中にUNIQEコマンドが存在する場合
+					String beforeUniqueString = line.substring(0, uniqueIndex);
+					manager.appendInSameRow(beforeUniqueString);
+					if (manager.isEffective() && isSqlUniqueKeyword(line, uniqueIndex)) {
+						// SQL文法上有効なUNIQUEである。
+						if (isComplexUniqueConstraint(line, uniqueIndex)) {
+							// 複合Uniuqe定義部は定義部自体を削除する。
+							decFieldsIte.remove();
+							continue decFieldsLoop;
+						} else {
+							// 単項目Uniqueの場合はUNIQUEキーワードを読み飛ばす。
+							String afterUniqueString = line.substring(uniqueIndex + UNIQUE.length());
+							noUniqueDecFieldBuilder.append(beforeUniqueString).append(afterUniqueString).append(LINE_SEPARATOR);
+						}
+					} else {
+						manager.appendWithNewLine(line.substring(uniqueIndex));
+						noUniqueDecFieldBuilder.append(line).append(LINE_SEPARATOR);
+					}
+				}
+				
+				decFieldsIte.set(noUniqueDecFieldBuilder.toString());
+			} catch (IOException ioe) {
+				// 何もしない。StringReaderのため、IOExceptionは発生しない。
+			}
+		}
+		
+		// CreateTable文を復元する。
+		StringBuilder noUniqueCreateTableBuilder = new StringBuilder();
+		noUniqueCreateTableBuilder.append(beforeDeclareFieldsSection)
+								  .append(StringUtil.join(declareFieldArray, DECLARE_FIELD_SEPARATOR))
+								  .append(afterDeclareFieldsSection);
 
+		this.command = noUniqueCreateTableBuilder.toString();
+	}
+	
+	/**
+	 * TODO javadoc
+	 * @param declareFieldLine
+	 * @param uniqueIndex
+	 * @return
+	 */
+	private boolean isSqlUniqueKeyword(String declareFieldLine, int uniqueIndex) {
+		return uniqueIndex == 0
+				|| " ".equals(String.valueOf(declareFieldLine.charAt(uniqueIndex - 1)));
+	}
+	
+	/**
+	 * TODO javadoc
+	 * 複合UNIQUEの複合フィールド定義部が同一行内に入っている前提となっていることに注意する。
+	 * @param declareFieldLine
+	 * @param uniqueIndex
+	 * @return
+	 */
+	private boolean isComplexUniqueConstraint(String declareFieldLine, int uniqueIndex) {
+		String afterUniqueString = declareFieldLine.substring(uniqueIndex + UNIQUE.length());
+		return afterUniqueString.trim().equals("(");
+	}
 }

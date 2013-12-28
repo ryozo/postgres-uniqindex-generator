@@ -82,6 +82,7 @@ public class UniqueIndexGenerator {
 				new FileInputStream(sqlFile), encoding))){
 			int c;
 			while ((c = reader.read()) != -1) {
+				// TODO サロゲート文字が含まれていた場合問題無いのか？
 				builder.append((char) c);
 			}
 		}

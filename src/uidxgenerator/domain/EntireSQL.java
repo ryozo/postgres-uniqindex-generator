@@ -47,7 +47,7 @@ public class EntireSQL implements Serializable {
 	 * @param conditionMap UNIQUE制約に対して追加する条件（Key:カラム名、Value:条件値)
 	 */
 	public void addConditionToAllUniqueConstraint(Map<String, String> conditionMap) {
-		List<SqlCommand> addSqlCommandList = new ArrayList<SqlCommand>();
+		List<SqlCommand> addSqlCommandList = new ArrayList<>();
 		for (SqlCommand sqlCommand : sqlCommandList) {
 			if (sqlCommand instanceof CreateTableSqlCommand) {
 				// TODO リファクタリング このif文は消せないか？

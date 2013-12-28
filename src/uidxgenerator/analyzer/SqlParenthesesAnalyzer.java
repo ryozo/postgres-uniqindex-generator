@@ -35,7 +35,7 @@ public class SqlParenthesesAnalyzer {
 			Character chr = target.charAt(i);
 			if (START.equals(chr) || END.equals(chr)) {
 				// 該当の括弧が有効なSQL構文であるかチェック
-				manager.updateStateInSameRow(target.substring(currentCursor, i));
+				manager.appendInSameRow(target.substring(currentCursor, i));
 				currentCursor = i;
 				if (manager.isEffective()) {
 					if (START.equals(chr)) {
@@ -54,7 +54,8 @@ public class SqlParenthesesAnalyzer {
 				}
 			}
 			if (CR.equals(chr)) {
-				manager.updateStateWithNewLine("");
+				manager.appendWithNewLine(target.substring(currentCursor, i));
+				currentCursor = i;
 				if (i < target.length() - 1) {
 					Character nextChar = target.charAt(i + 1);
 					if (LF.equals(nextChar)) {
@@ -63,7 +64,8 @@ public class SqlParenthesesAnalyzer {
 					}
 				}
 			} else if (LF.equals(chr)) {
-				manager.updateStateWithNewLine("");
+				manager.appendWithNewLine(target.substring(currentCursor, i));
+				currentCursor = i;
 			}
 		}
 		

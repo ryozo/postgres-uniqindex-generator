@@ -1,5 +1,7 @@
 package uidxgenerator.util;
 
+import java.util.List;
+
 /**
  * String関連のUtilクラスです。
  * @author W.Ryozo
@@ -24,6 +26,28 @@ public class StringUtil {
 	public static String trimWithSpaceString(String target) {
 		// TODO 正規表現のマッチを追加。
 		return target.trim();
+	}
+	
+	/**
+	 * 引数に受け取ったString配列をdelimiterでjoinします。
+	 * @param tokens join対象の文字列
+	 * @param delimiter 連結用文字列
+	 * @return join結果
+	 */
+	public static String join(List<String> tokens, String delimiter) {
+		if (tokens == null) {
+			return "";
+		}
+		if (delimiter == null) {
+			delimiter = "";
+		}
+		
+		StringBuilder resultBuilder = new StringBuilder();
+		for (String token : tokens) {
+			resultBuilder.append(token).append(delimiter);
+		}
+		
+		return resultBuilder.toString();
 	}
 
 }

@@ -128,6 +128,7 @@ public class SQLParser {
 			}
 		}
 
+		// TODO 改行やタブ文字もトリムすべき
 		String noCommentSql = noCommentSqlBuilder.toString().trim();
 		List<Set<String>> uniqueKeyList = new ArrayList<Set<String>>();
 
@@ -199,8 +200,7 @@ public class SQLParser {
 			}
 
 			// SqlCommandを作成
-			sqlCommand = new CreateTableSqlCommand(sql, tableName,
-					uniqueKeyList);
+			sqlCommand = new CreateTableSqlCommand(sql, tableName, uniqueKeyList);
 		} else {
 			sqlCommand = new SqlCommand(sql);
 		}
@@ -241,9 +241,9 @@ public class SQLParser {
 						sqlBuilder.append(SQL_DELIMITER);
 						if (i == sqlBlocks.length - 1) {
 							sqlBuilder.append(LINE_SEPARATOR);
-							manager.updateStateWithNewLine(sqlBlock);
+							manager.appendWithNewLine(sqlBlock);
 						} else {
-							manager.updateStateInSameRow(sqlBlock);
+							manager.appendInSameRow(sqlBlock);
 						}
 						if (manager.isEffective()) {
 							sqlCommandList.add(sqlBuilder.toString());
@@ -251,7 +251,7 @@ public class SQLParser {
 						}
 					}
 				} else {
-					manager.updateStateWithNewLine(currentLine);
+					manager.appendWithNewLine(currentLine);
 					sqlBuilder.append(currentLine);
 					sqlBuilder.append(LINE_SEPARATOR);
 				}
