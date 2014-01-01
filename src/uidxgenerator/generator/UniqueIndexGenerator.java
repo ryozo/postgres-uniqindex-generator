@@ -99,6 +99,7 @@ public class UniqueIndexGenerator {
 	 */
 	private void writeSqlFile(File outputFile, String writeString, String encoding) throws IOException {
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), encoding))) {
+			// TODO　削除
 			System.out.println(writeString);
 			writer.write(writeString);
 		}

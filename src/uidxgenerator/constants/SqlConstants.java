@@ -29,7 +29,7 @@ public class SqlConstants {
 	public static final String UNIQUE = "UNIQUE";
 	
 	/** フィールド定義部のSeparator */
-	public static final String DECLARE_FIELD_SEPARATOR = ",";
+	public static final String DECLARE_FIELD_DELIMITER = ",";
 	
 	/** 改行コード:CR */
 	public static final Character CR = (char)13;

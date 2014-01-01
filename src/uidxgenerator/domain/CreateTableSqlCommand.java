@@ -68,27 +68,36 @@ public class CreateTableSqlCommand extends SqlCommand {
 			// TODO Exception修正
 			throw new RuntimeException("SQL構文が不正です。");
 		}
+		
 		String beforeDeclareFieldsSection = this.getSqlCommand().substring(0, startParenses);
 		String declareFieldsSection = this.getSqlCommand().substring(startParenses + 1, endParenses);
 		String afterDeclareFieldsSection = this.getSqlCommand().substring(endParenses);
 		
-		// SQLを個々のフィールド別に分割する。
+		// CreateTable文のフィールド定義部を個々のフィールド別に分割し、配列に格納する。
 		List<String> declareFieldArray = new ArrayList<>();
 		try (BufferedReader reader = new BufferedReader(new StringReader(declareFieldsSection))) {
 			SQLStateManager manager = new SQLStateManager();
-			
 			StringBuilder decFieldBuilder = new StringBuilder();
 			String line;
 			while ((line = reader.readLine()) != null) {
-				String[] fieldCandidates = line.split(DECLARE_FIELD_SEPARATOR);
-				for (String fieldCandidate : fieldCandidates) {
-					manager.appendInSameRow(fieldCandidate);
-					if (manager.isEffective()) {
-						decFieldBuilder.append(fieldCandidate);
-						declareFieldArray.add(decFieldBuilder.toString());
-					} else {
-						decFieldBuilder.append(fieldCandidate).append(DECLARE_FIELD_SEPARATOR);
-					}
+				int delimiterIndex = line.indexOf(DECLARE_FIELD_DELIMITER);
+				int fromIndex = 0;
+				if (delimiterIndex >= 0) {
+					while (delimiterIndex >= 0) {
+						String decFieldCandidate = line.substring(fromIndex, delimiterIndex);
+						decFieldBuilder.append(decFieldCandidate);
+						manager.appendInSameRow(decFieldCandidate);
+						
+						if (manager.isEffective()) {
+							declareFieldArray.add(decFieldBuilder.toString());
+							decFieldBuilder = new StringBuilder();
+						}
+						
+						fromIndex = delimiterIndex + 1;
+						delimiterIndex = line.indexOf(DECLARE_FIELD_DELIMITER, delimiterIndex + 1);
+					}					
+				} else {
+					decFieldBuilder.append(line);
 				}
 
 				decFieldBuilder.append(LINE_SEPARATOR);
@@ -144,7 +153,7 @@ public class CreateTableSqlCommand extends SqlCommand {
 		// CreateTable文を復元する。
 		StringBuilder noUniqueCreateTableBuilder = new StringBuilder();
 		noUniqueCreateTableBuilder.append(beforeDeclareFieldsSection)
-								  .append(StringUtil.join(declareFieldArray, DECLARE_FIELD_SEPARATOR))
+								  .append(StringUtil.join(declareFieldArray, DECLARE_FIELD_DELIMITER))
 								  .append(afterDeclareFieldsSection);
 
 		this.command = noUniqueCreateTableBuilder.toString();
@@ -152,6 +161,7 @@ public class CreateTableSqlCommand extends SqlCommand {
 	
 	/**
 	 * TODO javadoc
+	 * TODO 後方文字列の確認
 	 * @param declareFieldLine
 	 * @param uniqueIndex
 	 * @return

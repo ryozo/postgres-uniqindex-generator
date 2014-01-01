@@ -231,28 +231,26 @@ public class SQLParser {
 			StringBuilder sqlBuilder = new StringBuilder();
 			while ((line = reader.readLine()) != null) {
 				int delimiterIndex = line.indexOf(SQL_DELIMITER);
-				if (0 <= delimiterIndex) {
-					String[] sqlCandidates = line.split(SQL_DELIMITER);
-					for (int i = 0; i < sqlCandidates.length; i++) {
-						String sqlCandidate = sqlCandidates[i];
+				int fromIndex = 0;
+				if (delimiterIndex >= 0) {
+					while (delimiterIndex >= 0) {
+						String sqlCandidate = line.substring(fromIndex, delimiterIndex + 1);
 						sqlBuilder.append(sqlCandidate);
 						manager.appendInSameRow(sqlCandidate);
 						
-						if (i < sqlCandidates.length -1) {
-							// 最終要素ではない場合
-							sqlBuilder.append(SQL_DELIMITER);
-						}
 						if (manager.isEffective()) {
 							sqlCommandList.add(sqlBuilder.toString());
 							sqlBuilder = new StringBuilder();
 						}
+						
+						fromIndex = delimiterIndex + 1;
+						delimiterIndex = line.indexOf(SQL_DELIMITER, delimiterIndex + 1);
 					}
-					sqlBuilder.append(LINE_SEPARATOR);
-					manager.appendWithNewLine("");
 				} else {
-					sqlBuilder.append(line).append(LINE_SEPARATOR);
-					manager.appendWithNewLine(line);
+					sqlBuilder.append(line);
 				}
+				sqlBuilder.append(LINE_SEPARATOR);
+				manager.appendWithNewLine("");
 			}
 			if (0 < sqlBuilder.length()) {
 				sqlCommandList.add(sqlBuilder.toString());

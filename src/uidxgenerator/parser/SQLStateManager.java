@@ -1,9 +1,7 @@
 package uidxgenerator.parser;
 
-import static uidxgenerator.constants.SqlConstants.MULTILINE_COMMENT_PREFIX;
-import static uidxgenerator.constants.SqlConstants.MULTILINE_COMMENT_SUFFIX;
-import static uidxgenerator.constants.SqlConstants.SINGLELINE_COMMENT_PREFIX;
-import static uidxgenerator.constants.SqlConstants.STRING_LITERAL;
+import static uidxgenerator.constants.SqlConstants.*;
+import uidxgenerator.util.StringUtil;
 
 /**
  * SQLの状態を管理する.
@@ -24,6 +22,31 @@ public class SQLStateManager {
 	 * 文字列リテラルは複数行に渡って記述することが可能である。
 	 */
 	private boolean inStringLiteral = false;
+	
+	/**
+	 * 引数に受け取ったSQL断片を元にSQL状態を更新する。<br />
+	 * @param sqlFlagment SQL断片
+	 */
+	public void append(String sqlFlagment) {
+		if (StringUtil.isNullOrEmpty(sqlFlagment)) {
+			return;
+		}
+		int fromIndex = 0;
+		int lineSeparatorIndex = sqlFlagment.indexOf(LF) < 0 ? sqlFlagment.indexOf(CR) : sqlFlagment.indexOf(LF);
+		do {
+			if (lineSeparatorIndex >= 0) {
+				System.out.println(lineSeparatorIndex);
+				String line = sqlFlagment.substring(fromIndex, lineSeparatorIndex);
+				appendWithNewLine(line);
+				fromIndex = lineSeparatorIndex + 1;
+			} else {
+				appendInSameRow(sqlFlagment.substring(fromIndex));
+				fromIndex = sqlFlagment.length();
+			}
+			lineSeparatorIndex = sqlFlagment.indexOf(LF, lineSeparatorIndex + 1);
+			
+		} while (fromIndex < sqlFlagment.length());
+	}
 	
 	/**
 	 * 引数に受け取ったSQL断片を行末と見なしてSQLの状態を更新する。
