@@ -35,7 +35,6 @@ public class SQLStateManager {
 		int lineSeparatorIndex = sqlFlagment.indexOf(LF) < 0 ? sqlFlagment.indexOf(CR) : sqlFlagment.indexOf(LF);
 		do {
 			if (lineSeparatorIndex >= 0) {
-				System.out.println(lineSeparatorIndex);
 				String line = sqlFlagment.substring(fromIndex, lineSeparatorIndex);
 				appendWithNewLine(line);
 				fromIndex = lineSeparatorIndex + 1;
