@@ -43,8 +43,11 @@ public class StringUtil {
 		}
 		
 		StringBuilder resultBuilder = new StringBuilder();
-		for (String token : tokens) {
-			resultBuilder.append(token).append(delimiter);
+		for (int i = 0; i < tokens.size(); i++) {
+			resultBuilder.append(tokens.get(i));
+			if (i < tokens.size() - 1) {
+				resultBuilder.append(delimiter);
+			}
 		}
 		
 		return resultBuilder.toString();
