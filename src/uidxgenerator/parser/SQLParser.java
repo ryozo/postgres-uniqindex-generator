@@ -128,7 +128,6 @@ public class SQLParser {
 			}
 		}
 
-		// TODO 改行やタブ文字もトリムすべき
 		String noCommentSql = noCommentSqlBuilder.toString().trim();
 		List<Set<String>> uniqueKeyList = new ArrayList<Set<String>>();
 
@@ -225,38 +224,32 @@ public class SQLParser {
 	private List<String> splitSqlCommands(String targetSqlCommands) {
 		List<String> sqlCommandList = new ArrayList<>();
 		SQLStateManager manager = new SQLStateManager();
-		try (BufferedReader reader = new BufferedReader(new StringReader(
-				targetSqlCommands))) {
-			String line;
-			StringBuilder sqlBuilder = new StringBuilder();
-			while ((line = reader.readLine()) != null) {
-				int delimiterIndex = line.indexOf(SQL_DELIMITER);
-				int fromIndex = 0;
-				if (delimiterIndex >= 0) {
-					while (delimiterIndex >= 0) {
-						String sqlCandidate = line.substring(fromIndex, delimiterIndex + 1);
-						sqlBuilder.append(sqlCandidate);
-						manager.appendInSameRow(sqlCandidate);
-						
-						if (manager.isEffective()) {
-							sqlCommandList.add(sqlBuilder.toString());
-							sqlBuilder = new StringBuilder();
-						}
-						
-						fromIndex = delimiterIndex + 1;
-						delimiterIndex = line.indexOf(SQL_DELIMITER, delimiterIndex + 1);
-					}
+		StringBuilder sqlBuilder = new StringBuilder();
+		int fromIndex = 0;
+		while (fromIndex <= targetSqlCommands.length()) {
+			int delimiterIndex = targetSqlCommands.indexOf(SQL_DELIMITER, fromIndex);
+			String sqlCandidate = null;
+			if (0 <= delimiterIndex) {
+				sqlCandidate = targetSqlCommands.substring(fromIndex, delimiterIndex);
+				sqlBuilder.append(sqlCandidate);
+				manager.append(sqlCandidate);
+				if (manager.isEffective()) {
+					sqlBuilder.append(SQL_DELIMITER);
+					sqlCommandList.add(sqlBuilder.toString());
+					sqlBuilder = new StringBuilder();
 				} else {
-					sqlBuilder.append(line);
+					// SQL文法とは無関係の区切り文字である場合、区切り文字を補完
+					sqlBuilder.append(SQL_DELIMITER);
 				}
-				sqlBuilder.append(LINE_SEPARATOR);
-				manager.appendWithNewLine("");
-			}
-			if (0 < sqlBuilder.length()) {
+			} else {
+				// Delimiterが見つからない場合（最終に達した場合）
+				sqlCandidate = targetSqlCommands.substring(fromIndex);
+				sqlBuilder.append(sqlCandidate);
 				sqlCommandList.add(sqlBuilder.toString());
+				sqlBuilder = new StringBuilder();
 			}
-		} catch (IOException e) {
-			// 何もしない。(StringReaderだからClose時にIOExceptionは発生しない）
+			
+			fromIndex = fromIndex + sqlCandidate.length() + SQL_DELIMITER.length();
 		}
 
 		return sqlCommandList;
