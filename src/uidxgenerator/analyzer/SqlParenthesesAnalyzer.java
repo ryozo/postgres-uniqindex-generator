@@ -1,35 +1,39 @@
 package uidxgenerator.analyzer;
 
-import static uidxgenerator.constants.SqlConstants.*;
-import uidxgenerator.parser.SQLStateManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
+import uidxgenerator.parser.SQLStateManager;
+import uidxgenerator.util.StringUtil;
+import static uidxgenerator.constants.SqlConstants.*;
+
+/**
+ * TODO javadoc
+ * @author W.Ryozo
+ *
+ */
 public class SqlParenthesesAnalyzer {
 	/** 開始括弧 */
 	private static final Character START = '(';
 	/** 終了括弧 */
 	private static final Character END = ')';
-	/** 開始括弧のIndex */
-	private int startParenthesesIndex = -1;
-	/** 終了括弧のIndex */
-	private int endParenthesesIndex = -1;
-	/** 分析済み？ */
-	private boolean analyzed = false;
 	
 	/**
 	 * TODO javadoc
 	 * @param target
-	 * @param traceStartParenthesesIndex
+	 * @return
 	 */
-	public void analyze(String target) {
-		if (target == null
-				|| target.length() == 0) {
+	public static SqlParenthesesInfoSet analyze(String target) {
+		if (StringUtil.isNullOrEmpty(target)) {
 			throw new IllegalArgumentException("target is null or empty");
 		}
 		
+		List<SqlParenthesesInfo> sqlParenthesesInfoList = new ArrayList<>();
 		SQLStateManager manager = new SQLStateManager();
 		int currentCursor = 0;
-		int stackCount = 0;
-		boolean isFirstParenthesesAppeared = false;
+		Stack<Integer> stack = new Stack<>();
+		
 		
 		for (int i = 0; i < target.length(); i++) {
 			Character chr = target.charAt(i);
@@ -39,16 +43,11 @@ public class SqlParenthesesAnalyzer {
 				currentCursor = i;
 				if (manager.isEffective()) {
 					if (START.equals(chr)) {
-						if (!isFirstParenthesesAppeared) {
-							isFirstParenthesesAppeared = true;
-							startParenthesesIndex = i;
-						}
-						stackCount++;
+						stack.push(i);
 					} else {
-						stackCount--;
-						if (stackCount == 0) {
-							endParenthesesIndex = i;
-							break;
+						if (!stack.empty()) {
+							SqlParenthesesInfo info = new SqlParenthesesInfo(stack.pop(), i);
+							sqlParenthesesInfoList.add(info);
 						}
 					}
 				}
@@ -69,30 +68,7 @@ public class SqlParenthesesAnalyzer {
 			}
 		}
 		
-		analyzed = true;
-	}
-	
-	/**
-	 * TODO javadoc
-	 * @return
-	 */
-	public int getStartParenthesesIndex() {
-		if (!analyzed) {
-			throw new IllegalArgumentException(""); // TODO 見直し
-		}
-		
-		return startParenthesesIndex;
-	}
-	
-	/**
-	 * TODO javadoc
-	 * @return
-	 */
-	public int getEndParenthesesIndex() {
-		if (!analyzed) {
-			throw new IllegalArgumentException(""); // TODO 見直し
-		}
-		
-		return endParenthesesIndex;
+		SqlParenthesesInfoSet resultInfo = new SqlParenthesesInfoSet(sqlParenthesesInfoList);
+		return resultInfo;
 	}
 }
