@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import uidxgenerator.constants.DBMS;
 import uidxgenerator.domain.EntireSQL;
 import uidxgenerator.parser.SQLParser;
 
@@ -25,16 +26,29 @@ public class UniqueIndexGenerator {
 	/** 論理削除フラグのデフォルト名 */
 	public static final String DEFAULT_DELFLAG_NAME = "is_deleted";
 	
-	/**
-	 * TODO javadoc
-	 * TODO Exceptionを投げないようにする。
-	 * @param inputSqlFile
-	 * @param outputSqlFile
-	 * @param fileEncoding
-	 * @throws Exception
-	 */
-	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding) throws Exception {
-		generate(inputSqlFile, outputSqlFile, fileEncoding, DEFAULT_DELFLAG_NAME, Boolean.FALSE);
+	/** デフォルトDBMS */
+	public static final DBMS DEFAULT_DBMS = DBMS.POSTGRESQL;
+
+	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding) {
+		generate(inputSqlFile, outputSqlFile, fileEncoding, DEFAULT_DBMS, DEFAULT_DELFLAG_NAME, Boolean.FALSE);
+	}
+	
+	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, DBMS targetDBMS) {
+		generate(inputSqlFile, outputSqlFile, fileEncoding, targetDBMS, DEFAULT_DELFLAG_NAME, Boolean.FALSE);
+	}
+	
+	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, String conditionField, Object conditionValue) {
+		generate(inputSqlFile, outputSqlFile, fileEncoding, DEFAULT_DBMS, conditionField, conditionValue);
+	}
+	
+	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, Map<String, Object> conditionMap) {
+		generate(inputSqlFile, outputSqlFile, fileEncoding, DEFAULT_DBMS, conditionMap);
+	}
+	
+	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, DBMS targetDBMS, String conditionField, Object conditionValue) {
+		Map<String, Object> conditionMap = new HashMap<>();
+		conditionMap.put(conditionField, conditionValue);
+		generate(inputSqlFile, outputSqlFile, fileEncoding, targetDBMS, conditionMap);
 	}
 	
 	// TODO javadoc
@@ -42,8 +56,8 @@ public class UniqueIndexGenerator {
 	public void generate(File inputSqlFile,
 			File outputSqlFile,
 			String fileEncoding,
-			String indexConditionField,
-			Boolean indexConditionValue) throws Exception {
+			DBMS targetDBMS,
+			Map<String, Object> conditionMap) {
 		// arguments validate
 		if (inputSqlFile == null) {
 			throw new IllegalArgumentException("読み込み対象のSQLファイルが指定されていません。");
@@ -58,16 +72,18 @@ public class UniqueIndexGenerator {
 			throw new IllegalArgumentException("出力用のSQLファイルが既に存在します。存在しないファイル名を指定してください");
 		}
 
+		try {
 		String sql = readSqlFile(inputSqlFile, fileEncoding);
 		SQLParser sqlParser = new SQLParser();
 		EntireSQL entireSql = sqlParser.parse(sql);
-
-		Map<String, String> conditionMap = new HashMap<String, String>();
-		// TODO 修正
-		conditionMap.put(indexConditionField, indexConditionValue.toString());
-		entireSql.addConditionToAllUniqueConstraint(conditionMap);
+		// TODO ここでDBMSを渡さないようにする。
+		entireSql.addConditionToAllUniqueConstraint(targetDBMS, conditionMap);
 		
 		writeSqlFile(outputSqlFile, entireSql.toString(), fileEncoding);
+		} catch (Exception e) {
+			// TODO 例外処理の実装
+			e.printStackTrace();
+		}
 	}
 	
 	/**
