@@ -1,5 +1,6 @@
 package uidxgenerator.analyzer;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,10 +8,19 @@ import java.util.List;
  * @author W.Ryozo
  * @version 1.0
  */
-public class SqlParenthesesInfoSet {
+public class SqlParenthesesInfoSet implements Serializable {
 	
+	/** serialVersionUID */
+	private static final long serialVersionUID = 1L;
+	
+	// TODO ここはSetで表現するべきでは？
+	// TODO SQLの順序に関する処理はUtilクラス側で何とかする。
 	private List<SqlParenthesesInfo> sqlParenthesesInfoList;
 	
+	/**
+	 * SQLの括弧情報を利用してインスタンスを作成します。
+	 * @param sqlParenthesesInfoList SQL括弧情報の一覧
+	 */
 	public SqlParenthesesInfoSet(List<SqlParenthesesInfo> sqlParenthesesInfoList) {
 		if (sqlParenthesesInfoList == null) {
 			throw new NullPointerException("sqlParenthesesInfoList is null");
@@ -18,39 +28,11 @@ public class SqlParenthesesInfoSet {
 		this.sqlParenthesesInfoList = sqlParenthesesInfoList;
 	}
 	
+	/**
+	 * 当クラスが保持するSQL括弧情報の一覧を取得します。
+	 * @return SQL括弧情報の一覧
+	 */
 	public List<SqlParenthesesInfo> getSqlParenthesesInfoList() {
 		return sqlParenthesesInfoList;
 	}
-	
-	/**
-	 * 引数の文字列位置が当オブジェクトの管理するすべての括弧内に一つでも含まれているか確認します。
-	 * @param targetIndex チェック対象の文字列位置
-	 * @return チェック結果
-	 */
-	public boolean isEnclosed(int targetIndex) {
-		boolean result = false;
-		for (SqlParenthesesInfo info : sqlParenthesesInfoList) {
-			result = result || info.isEnclosed(targetIndex);
-		}
-		return result;
-	}
-	
-	/**
-	 * 最も最初に始まる括弧の情報を取得します。
-	 * FIXME: 本当は括弧の構造をTree構造で管理して、こういったメソッドは利用しない方針としたい。
-	 * @return 最も最初に始まる括弧の情報
-	 */
-	public SqlParenthesesInfo getFirstStartParenthesesInfo() {
-		SqlParenthesesInfo result = null;
-		for (SqlParenthesesInfo info : sqlParenthesesInfoList) {
-			if (result == null) {
-				result = info;
-			}
-			if (info.getStartParenthesesIndex() < result.getStartParenthesesIndex()) {
-				result = info;
-			}
-		}
-		return result;
-	}
-
 }

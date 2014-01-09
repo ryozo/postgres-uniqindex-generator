@@ -33,14 +33,4 @@ public class SqlParenthesesInfo {
 	public int getEndParenthesesIndex() {
 		return endParenthesesIndex;
 	}
-	
-	/**
-	 * 引数の文字列位置が括弧内に含まれていることを確認します。
-	 * @param target チェック対象の文字の位置
-	 * @return 括弧内に含まれている場合true、含まれていない場合false
-	 */
-	public boolean isEnclosed(int targetIndex) {
-		return startParenthesesIndex < targetIndex && targetIndex < endParenthesesIndex;
-	}
-
 }
