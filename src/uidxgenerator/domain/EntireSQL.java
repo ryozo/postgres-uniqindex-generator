@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import uidxgenerator.builder.CreateIndexSqlBuilder;
+import uidxgenerator.builder.CreateIndexBuilderFactory;
+import uidxgenerator.builder.ICreateIndexBuilder;
+import uidxgenerator.builder.impl.PostgresCreateIndexBuilder;
+import uidxgenerator.constants.DBMS;
 
 /**
  * SQL全体を保持するDomainです。
@@ -46,7 +49,7 @@ public class EntireSQL implements Serializable {
 	 * </pre>
 	 * @param conditionMap UNIQUE制約に対して追加する条件（Key:カラム名、Value:条件値)
 	 */
-	public void addConditionToAllUniqueConstraint(Map<String, String> conditionMap) {
+	public void addConditionToAllUniqueConstraint(DBMS targetDBMS, Map<String, Object> conditionMap) {
 		List<SqlCommand> addSqlCommandList = new ArrayList<>();
 		for (SqlCommand sqlCommand : sqlCommandList) {
 			if (sqlCommand instanceof CreateTableSqlCommand) {
@@ -57,13 +60,12 @@ public class EntireSQL implements Serializable {
 
 				List<Set<String>> uniqueKeyList = createTableSql.getUniqueKeyList();
 				for (Set<String> uniqueKeySet : uniqueKeyList) {
-					CreateIndexSqlBuilder indexBuilder = new CreateIndexSqlBuilder(
-							"hoge_index", 
-							createTableSql.getCreateTableName(),
-							uniqueKeySet.toArray(new String[0]));
+					ICreateIndexBuilder indexBuilder = CreateIndexBuilderFactory.createBuilder(targetDBMS);
+					indexBuilder.setTableName(createTableSql.getCreateTableName());
+					indexBuilder.setIndexFields(uniqueKeySet.toArray(new String[]{}));
 					if (conditionMap != null) {
 						for (String key : conditionMap.keySet()) {
-							indexBuilder.setIndexCondition(key, conditionMap.get(key));
+							indexBuilder.addIndexCondition(key, conditionMap.get(key));
 						}
 					}
 
