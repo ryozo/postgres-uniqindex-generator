@@ -4,7 +4,7 @@ import uidxgenerator.analyzer.SqlParenthesesInfo;
 import uidxgenerator.analyzer.SqlParenthesesInfoSet;
 
 /**
- * SQL上の括弧に関するUtilクラスです。
+ * SQL上の括弧に関する操作をとりまとめたUtilクラスです。
  * @author W.Ryozo
  * @version 1.0
  */
