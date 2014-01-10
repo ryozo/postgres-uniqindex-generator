@@ -1,6 +1,7 @@
 package uidxgenerator.util;
 
 import static uidxgenerator.constants.SqlConstants.CR;
+import static uidxgenerator.constants.SqlConstants.CREATE_TABLE_PREFIX;
 import static uidxgenerator.constants.SqlConstants.DECLARE_FIELD_DELIMITER;
 import static uidxgenerator.constants.SqlConstants.LF;
 import static uidxgenerator.constants.SqlConstants.UNIQUE;
@@ -152,5 +153,62 @@ public class SqlUtil {
 		
 		return declareFieldArray;
 	}
+	
+	/**
+	 * 引数のSqlがCreateTable文であるか判定する。
+	 * @param sql 判定対象のSQL文
+	 * @return 判定結果
+	 */
+	public static boolean isCreateTableSql(String sql) {
+		SQLStateManager manager = new SQLStateManager();
+		int fromIndex = 0;
+		while (fromIndex < sql.length()) {
+			int createTableIndex = sql.toUpperCase().indexOf(CREATE_TABLE_PREFIX);
+			String candidateCreateTable = null;
+			if (0 <= createTableIndex) {
+				candidateCreateTable = sql.substring(fromIndex, createTableIndex);
+				manager.append(candidateCreateTable);
+				if (manager.isEffective()) {
+					// CreateTableキーワードを発見
+					return true;
+				}
+			}
+			fromIndex = fromIndex + candidateCreateTable.length() + CREATE_TABLE_PREFIX.length();
+		}
+		
+		return false;
+	}
 
+	/**
+	 * SQL文をDelimiterで分割する。<br />
+	 * SQL文中のDelimiterがSQL文としての意味を成さない場合（コメント文中や文字列リテラル内の場合）は分割対象としない。<br />
+	 * <pre>
+	 * [例]
+	 *  [input]
+	 *   以下のCreateTable文のフィールド定義部を、区切り文字「,」（カンマ）で分割する場合
+	 *   (field1 serial primary key,field2 text ¥/*comment , comment*¥/ unique, field3 text DEFAULT('hoge,hoge'))
+	 *  [output]
+	 *   以下の3要素を保持する配列を返却
+	 *   [(field1 serial primary key]
+	 *   [field2 text ¥/*comment , comment*¥/ unique]  ※ コメント文中のカンマは分割対象の文字列として扱われない。
+	 *   [field3 text DEFAULT('hoge,hoge')]            ※ 文字列リテラル内のカンマは分割対象の文字列として扱われない。
+	 * </pre>
+	 * 
+	 * @param sql 分割対象のSQL
+	 * @param delimiter 分割文字
+	 * @return 分割後の個々の要素を保持するList
+	 */
+	public static List<String> split(String sql, String delimiter) {
+		return null;
+	}
+	
+	/**
+	 * SQL文中に含まれるコメントを取り除く。
+	 * @param sql 対象のSQL文
+	 * @return コメントが存在しないSQL文
+	 */
+	public static String removeComment(String sql) {
+		// TODO 実装
+		return null;
+	}
 }

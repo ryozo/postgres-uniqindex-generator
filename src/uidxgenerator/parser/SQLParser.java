@@ -57,14 +57,15 @@ public class SQLParser {
 	 * @return 作成したSQLCommand
 	 */
 	private SqlCommand buildSqlCommand(String sql) {
-		// TODO 当ロジック内でのSqlStateManager利用を検討
 		if (StringUtil.isNullOrEmpty(sql)) {
 			throw new IllegalArgumentException("SQL is null or empty");
 		}
 
 		SqlCommand sqlCommand = null;
-		boolean isCreateTableSql = isCreateTableSql(sql);
-		if (isCreateTableSql) {
+		if (SqlUtil.isCreateTableSql(sql)) {
+			// CreateTable文内に含まれるUniqueキー情報を解析
+			List<Set<String>> uniqueKeyList = new ArrayList<>();
+			
 			List<String> fieldDefinitionList = SqlUtil.decompositionFieldDefinitionPart(sql);
 			for (String fieldDefinition : fieldDefinitionList) {
 				SQLStateManager manager = new SQLStateManager();
@@ -76,14 +77,16 @@ public class SQLParser {
 				manager.append(beforeUniqueString);
 				if (manager.isEffective() && SqlUtil.isSqlUniqueKeyword(fieldDefinition, uniqueIndex)) {
 					// SQL文法上有効なUNIQUEキーワードである。
+					Set<String> keySet = new LinkedHashSet<>();
 					if (SqlUtil.isComplexUniqueConstraint(fieldDefinition, uniqueIndex)) {
+						// 複合UNIQUE - 括弧内のフィールドすべてを対象とする。
 						SqlParenthesesInfoSet parenthesesInfoSet = SqlParenthesesAnalyzer.analyze(fieldDefinition);
 						SqlParenthesesInfo uniqueFieldsParentheses = SqlParenthesesUtil.getFirstStartParenthesesInfo(parenthesesInfoSet);
-						
-						// TODO ここから
+						String innerParentheses = SqlParenthesesUtil.getInsideParenthesesString(fieldDefinition, uniqueFieldsParentheses);
 						
 					} else {
-						
+						// 単項目UNIQE フィールド定義部の先頭単語がUNIQUEキー名である
+						keySet.add(fieldDefinition.trim().split(" ")[0]);
 					}
 				}
 			}
@@ -284,30 +287,5 @@ public class SQLParser {
 		}
 
 		return sqlCommandList;
-	}
-	
-	/**
-	 * 引数のSqlがCreateTable文であるか判定する。
-	 * @param sql 判定対象のSQL文
-	 * @return 判定結果
-	 */
-	private boolean isCreateTableSql(String sql) {
-		SQLStateManager manager = new SQLStateManager();
-		int fromIndex = 0;
-		while (fromIndex < sql.length()) {
-			int createTableIndex = sql.toUpperCase().indexOf(CREATE_TABLE_PREFIX);
-			String candidateCreateTable = null;
-			if (0 <= createTableIndex) {
-				candidateCreateTable = sql.substring(fromIndex, createTableIndex);
-				manager.append(candidateCreateTable);
-				if (manager.isEffective()) {
-					// CreateTableキーワードを発見
-					return true;
-				}
-			}
-			fromIndex = fromIndex + candidateCreateTable.length() + CREATE_TABLE_PREFIX.length();
-		}
-		
-		return false;
 	}
 }
