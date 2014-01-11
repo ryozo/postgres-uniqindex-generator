@@ -7,7 +7,7 @@ import java.util.List;
  * @author W.Ryozo
  * @version 1.0
  */
-public class StringUtil {
+public class StringUtils {
 	
 	/**
 	 * 引数の文字列がnullまたは空文字であることをチェックします。

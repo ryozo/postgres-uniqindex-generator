@@ -8,7 +8,7 @@ import uidxgenerator.analyzer.SqlParenthesesInfoSet;
  * @author W.Ryozo
  * @version 1.0
  */
-public class SqlParenthesesUtil {
+public class SqlParenthesesUtils {
 
 	/**
 	 * 第二引数の文字列位置が第一引数の括弧内に含まれていることを確認します。

@@ -1,10 +1,6 @@
 package uidxgenerator.util;
 
-import static uidxgenerator.constants.SqlConstants.CR;
-import static uidxgenerator.constants.SqlConstants.CREATE_TABLE_PREFIX;
-import static uidxgenerator.constants.SqlConstants.DECLARE_FIELD_DELIMITER;
-import static uidxgenerator.constants.SqlConstants.LF;
-import static uidxgenerator.constants.SqlConstants.UNIQUE;
+import static uidxgenerator.constants.SqlConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +15,7 @@ import uidxgenerator.parser.SQLStateManager;
  * @author W.Ryozo
  * @version 1.0
  */
-public class SqlUtil {
+public class SqlUtils {
 	
 	/**
 	 * 引数に指定されたSQL文字列上のUNIQUEキーワードがSQL上の一意制約を表すUNIQUEキーワードであるかチェックする。<br />
@@ -112,7 +108,7 @@ public class SqlUtil {
 	public static List<String> decompositionFieldDefinitionPart(String createTableSql) {
 		// TODO create table文の判定を追加
 		SqlParenthesesInfoSet parenthesesInfoSet = SqlParenthesesAnalyzer.analyze(createTableSql);
-		SqlParenthesesInfo fieldDefinitionPharentehses = SqlParenthesesUtil.getFirstStartParenthesesInfo(parenthesesInfoSet);
+		SqlParenthesesInfo fieldDefinitionPharentehses = SqlParenthesesUtils.getFirstStartParenthesesInfo(parenthesesInfoSet);
 		
 		String fieldDefinitionSection = createTableSql.substring(fieldDefinitionPharentehses.getStartParenthesesIndex() + 1, 
 				fieldDefinitionPharentehses.getEndParenthesesIndex());
@@ -132,7 +128,7 @@ public class SqlUtil {
 				// TODO この一行の正当性を検証する
 				manager.append(candidateField);
 				if (manager.isEffective() 
-						&& !SqlParenthesesUtil.isEnclosed(decFieldsParenthesesSet,delimiterIndex)) {
+						&& !SqlParenthesesUtils.isEnclosed(decFieldsParenthesesSet,delimiterIndex)) {
 					// SQL文法上有効なフィールド定義区切り文字であり、かつ、括弧で包まれていない（フィールド定義の区切り文字として利用されている）
 					declareFieldArray.add(declareFieldBuilder.toString());
 					declareFieldBuilder = new StringBuilder();
@@ -164,14 +160,14 @@ public class SqlUtil {
 		int fromIndex = 0;
 		while (fromIndex < sql.length()) {
 			int createTableIndex = sql.toUpperCase().indexOf(CREATE_TABLE_PREFIX);
-			String candidateCreateTable = null;
-			if (0 <= createTableIndex) {
-				candidateCreateTable = sql.substring(fromIndex, createTableIndex);
-				manager.append(candidateCreateTable);
-				if (manager.isEffective()) {
-					// CreateTableキーワードを発見
-					return true;
-				}
+			if (createTableIndex < 0) {
+				break;
+			}
+			String candidateCreateTable = sql.substring(fromIndex, createTableIndex);
+			manager.append(candidateCreateTable);
+			if (manager.isEffective()) {
+				// CreateTableキーワードを発見
+				return true;
 			}
 			fromIndex = fromIndex + candidateCreateTable.length() + CREATE_TABLE_PREFIX.length();
 		}
@@ -208,7 +204,97 @@ public class SqlUtil {
 	 * @return コメントが存在しないSQL文
 	 */
 	public static String removeComment(String sql) {
-		// TODO 実装
-		return null;
+		StringBuilder noCommentSqlBuilder = new StringBuilder();
+		SQLStateManager manager = new SQLStateManager();
+		// 単一行コメント文中であることを表すフラグ
+		boolean isInnerSingleLineCommentFlg = false;
+		// 複数行コメント文中であることを表すフラグ
+		boolean isInnerMultiLineCommentFlg = false;
+		
+		int fromIndex = 0;
+		while (fromIndex <= sql.length()) {
+			// 現在判定対象としている文字列を取得
+			String currentDecisionStr = sql.substring(fromIndex);
+			if (isInnerSingleLineCommentFlg) {
+				String lineSeparateStr = null;
+				// ファイル内の改行コードは統一されている前提。
+				// 同一ファイルで改行コード体系が異なるファイルを扱う場合、要修正。
+				int lineSeparatorIndex = currentDecisionStr.indexOf(CR);
+				if (0 <= lineSeparatorIndex) {
+					lineSeparateStr = String.valueOf(CR);
+					if (lineSeparatorIndex < currentDecisionStr.length() - 1) {
+						Character nextCrStr = currentDecisionStr.charAt(lineSeparatorIndex + 1);
+						if (LF.equals(nextCrStr)) {
+							lineSeparateStr = lineSeparateStr.concat(String.valueOf(LF));
+						}
+					}
+				} else {
+					lineSeparatorIndex = currentDecisionStr.indexOf(LF);
+					if (0 <= lineSeparatorIndex) {
+						lineSeparateStr = String.valueOf(LF);
+					}
+				}
+				
+				if (0 <= lineSeparatorIndex) {
+					// 単一行コメント文中である場合、改行文字は例外無く単一行コメントの終了を意味するため
+					// SqlStateManagerによる有効文字判定は行わない。
+					isInnerSingleLineCommentFlg = false;
+					manager.appendWithNewLine(currentDecisionStr.substring(0, lineSeparatorIndex));
+					fromIndex = fromIndex + lineSeparatorIndex + lineSeparateStr.length();
+					noCommentSqlBuilder.append(lineSeparateStr);
+
+				} else {
+					// コメントの終端文字が存在しない場合、以降の行はすべて単一コメントであるため、処理終了
+					break;
+				}
+				
+			} else if (isInnerMultiLineCommentFlg) {
+				// 複数行コメントの終了文字を探し、該当文字がSQL文法用有効であるかチェックする。
+				int mlCommentSuffixIndex = currentDecisionStr.indexOf(MULTILINE_COMMENT_SUFFIX);
+				if (0 <= mlCommentSuffixIndex) {
+					// 複数行コメント文中である場合、SUFFIX文字は例外無く複数行コメントの終了を意味するため
+					// SqlStateManagerによる有効文字判定は行わない。
+					isInnerMultiLineCommentFlg = false;
+					manager.append(currentDecisionStr.substring(0, mlCommentSuffixIndex + MULTILINE_COMMENT_SUFFIX.length()));
+					fromIndex = fromIndex + mlCommentSuffixIndex + MULTILINE_COMMENT_SUFFIX.length();
+					continue;
+				} else {
+					// コメントの終端文字が存在しない場合、今後コメント以外のSQL文は存在しないため、処理終了
+					break;
+				}
+			} else {
+				// 現在コメント文中ではない
+				int startSingleCommentIndex = currentDecisionStr.indexOf(SINGLELINE_COMMENT_PREFIX);
+				int startMultiCommentIndex = currentDecisionStr.indexOf(MULTILINE_COMMENT_PREFIX);
+				int minimumIndex = NumberUtils.getMinimumOfPositive(startSingleCommentIndex, startMultiCommentIndex);
+				if (minimumIndex < 0) {
+					// 以降の文字はすべてコメント文を含まないSQL文である。内容をBuilderにAppendし処理終了。
+					noCommentSqlBuilder.append(currentDecisionStr);
+					break;
+				} else {
+					String foundString = null;
+					if (minimumIndex == startSingleCommentIndex) {
+						foundString = SINGLELINE_COMMENT_PREFIX;
+					} else {
+						foundString = MULTILINE_COMMENT_PREFIX;
+					}
+					
+					String beforeCommentStr = currentDecisionStr.substring(0, minimumIndex);
+					noCommentSqlBuilder.append(beforeCommentStr);
+					manager.append(beforeCommentStr);
+					if (manager.isEffective()) {
+						isInnerSingleLineCommentFlg = minimumIndex == startSingleCommentIndex;
+						isInnerMultiLineCommentFlg = minimumIndex == startMultiCommentIndex;
+					} else {
+						// コメント文字列がSQL文歩上コメントの開始として認識されない場合、該当の文字はSQL文であるため、BuilderにAppendする。
+						noCommentSqlBuilder.append(foundString);
+					}
+					fromIndex = fromIndex + beforeCommentStr.length() + foundString.length();
+					manager.append(foundString);
+				}
+			}
+		}
+		
+		return noCommentSqlBuilder.toString();
 	}
 }
