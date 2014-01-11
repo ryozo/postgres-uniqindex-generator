@@ -11,7 +11,7 @@ import uidxgenerator.builder.ICreateIndexBuilder;
 import uidxgenerator.constants.PostgresConditionLiteral;
 import uidxgenerator.constants.PostgresDataType;
 import uidxgenerator.domain.SqlCommand;
-import uidxgenerator.util.StringUtil;
+import uidxgenerator.util.StringUtils;
 
 /**
  * PostgreSQL用のCreateUniqueIndex文Builderです。
@@ -51,7 +51,7 @@ public class PostgresCreateIndexBuilder implements ICreateIndexBuilder {
 	 */
 	@Override
 	public void setTableName(String tableName) {
-		if (StringUtil.isNullOrEmpty(tableName)) {
+		if (StringUtils.isNullOrEmpty(tableName)) {
 			throw new IllegalArgumentException("対象テーブル名が指定されていません。");
 		}
 		this.tableName = tableName;
@@ -73,7 +73,7 @@ public class PostgresCreateIndexBuilder implements ICreateIndexBuilder {
 	 */
 	@Override
 	public void addIndexCondition(String fieldName, Object fieldValue) {
-		if (StringUtil.isNullOrEmpty(fieldName)) {
+		if (StringUtils.isNullOrEmpty(fieldName)) {
 			throw new IllegalArgumentException("UniqueIndexの条件フィールドがNullです");
 		}
 		

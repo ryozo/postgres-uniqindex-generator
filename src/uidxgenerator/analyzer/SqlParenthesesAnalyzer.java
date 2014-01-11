@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 import uidxgenerator.parser.SQLStateManager;
-import uidxgenerator.util.StringUtil;
+import uidxgenerator.util.StringUtils;
 import static uidxgenerator.constants.SqlConstants.*;
 
 /**
@@ -25,7 +25,7 @@ public class SqlParenthesesAnalyzer {
 	 * @return
 	 */
 	public static SqlParenthesesInfoSet analyze(String target) {
-		if (StringUtil.isNullOrEmpty(target)) {
+		if (StringUtils.isNullOrEmpty(target)) {
 			throw new IllegalArgumentException("target is null or empty");
 		}
 		

@@ -1,7 +1,8 @@
 package uidxgenerator.parser;
 
 import static uidxgenerator.constants.SqlConstants.*;
-import uidxgenerator.util.StringUtil;
+import uidxgenerator.util.NumberUtils;
+import uidxgenerator.util.StringUtils;
 
 /**
  * SQLの状態を管理する.
@@ -28,7 +29,7 @@ public class SQLStateManager {
 	 * @param sqlFlagment SQL断片
 	 */
 	public void append(String sqlFlagment) {
-		if (StringUtil.isNullOrEmpty(sqlFlagment)) {
+		if (StringUtils.isNullOrEmpty(sqlFlagment)) {
 			return;
 		}
 		int fromIndex = 0;
@@ -105,7 +106,7 @@ public class SQLStateManager {
 			int startSingleCommentIndex = sqlFlagment.indexOf(SINGLELINE_COMMENT_PREFIX);
 			int startMultiCommentIndex = sqlFlagment.indexOf(MULTILINE_COMMENT_PREFIX);
 			int startStringLiteralIndex = sqlFlagment.indexOf(STRING_LITERAL);
-			int minimumIndex = getMinimumOfPositive(startSingleCommentIndex, startMultiCommentIndex, startStringLiteralIndex);
+			int minimumIndex = NumberUtils.getMinimumOfPositive(startSingleCommentIndex, startMultiCommentIndex, startStringLiteralIndex);
 			if (minimumIndex < 0) {
 				// コメント文もリテラルも何も定義されていない。
 				// ステータス更新せず処理終了。
@@ -149,36 +150,6 @@ public class SQLStateManager {
 				}
 			}
 		}
-	}
-
-	/**
-	 * 引数のうち正の数で最小の値を返す。（0がある場合、0を返す）<br />
-	 * 正の数が1つも無い場合（すべて負の数である場合）、最初の引数を返す。
-	 * @param targets チェック対象の数値
-	 * @return 判定結果
-	 */
-	private int getMinimumOfPositive(int... targets) {
-		if (targets == null || targets.length == 0) {
-			throw new IllegalArgumentException("targets is null or empty");
-		}
-		boolean foundPositiveNum = false;
-		int a = Integer.MAX_VALUE;
-		for (int target : targets) {
-			if (target < 0) {
-				continue;
-			}
-			if (target == 0) {
-				// 0が来たら最小値確定。
-				return 0;
-			}
-			foundPositiveNum = true;
-			if (target < a) {
-				a = target;
-			}
-		}
-		
-		// 正の数が一つも無ければ最初の要素を返す。
-		return foundPositiveNum ? a : targets[0];
 	}
 
 	/**

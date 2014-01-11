@@ -9,9 +9,9 @@ import uidxgenerator.analyzer.SqlParenthesesAnalyzer;
 import uidxgenerator.analyzer.SqlParenthesesInfo;
 import uidxgenerator.analyzer.SqlParenthesesInfoSet;
 import uidxgenerator.parser.SQLStateManager;
-import uidxgenerator.util.SqlParenthesesUtil;
-import uidxgenerator.util.SqlUtil;
-import uidxgenerator.util.StringUtil;
+import uidxgenerator.util.SqlParenthesesUtils;
+import uidxgenerator.util.SqlUtils;
+import uidxgenerator.util.StringUtils;
 import static uidxgenerator.constants.SqlConstants.*;
 
 /**
@@ -62,7 +62,7 @@ public class CreateTableSqlCommand extends SqlCommand {
 	public void removeUniqueConstraints() {
 		//テーブルの項目定義部を取得
 		SqlParenthesesInfoSet parenthesesInfoSet = SqlParenthesesAnalyzer.analyze(this.getSqlCommand());
-		SqlParenthesesInfo declareFieldParenthese = SqlParenthesesUtil.getFirstStartParenthesesInfo(parenthesesInfoSet);
+		SqlParenthesesInfo declareFieldParenthese = SqlParenthesesUtils.getFirstStartParenthesesInfo(parenthesesInfoSet);
 		if (declareFieldParenthese == null) {
 			// TODO Exception修正
 			throw new RuntimeException("SQL構文が不正です。");
@@ -72,7 +72,7 @@ public class CreateTableSqlCommand extends SqlCommand {
 		String afterDeclareFieldsSection = this.getSqlCommand().substring(declareFieldParenthese.getEndParenthesesIndex());
 		
 		// CreateTable文のフィールド定義部を個々のフィールド別に分割し、配列に格納する。
-		List<String> declareFieldArray = SqlUtil.decompositionFieldDefinitionPart(getSqlCommand());
+		List<String> declareFieldArray = SqlUtils.decompositionFieldDefinitionPart(getSqlCommand());
 		
 		ListIterator<String> decFieldsIte = declareFieldArray.listIterator();
 		decFieldsLoop: while (decFieldsIte.hasNext()) {
@@ -87,9 +87,9 @@ public class CreateTableSqlCommand extends SqlCommand {
 			
 			String beforeUniqueString = decField.substring(0, uniqueIndex);
 			manager.append(beforeUniqueString);
-			if (manager.isEffective() && SqlUtil.isSqlUniqueKeyword(decField, uniqueIndex)) {
+			if (manager.isEffective() && SqlUtils.isSqlUniqueKeyword(decField, uniqueIndex)) {
 				// SQL文法上有効なUNIQUEキーワードである。
-				if (SqlUtil.isComplexUniqueConstraint(decField, uniqueIndex)) {
+				if (SqlUtils.isComplexUniqueConstraint(decField, uniqueIndex)) {
 					// 複合Unique制約の場合、定義部自体を削除する。
 					decFieldsIte.remove();
 					continue decFieldsLoop;
@@ -110,7 +110,7 @@ public class CreateTableSqlCommand extends SqlCommand {
 		// CreateTable文を復元する。
 		StringBuilder noUniqueCreateTableBuilder = new StringBuilder();
 		noUniqueCreateTableBuilder.append(beforeDeclareFieldsSection)
-								  .append(StringUtil.join(declareFieldArray, DECLARE_FIELD_DELIMITER))
+								  .append(StringUtils.join(declareFieldArray, DECLARE_FIELD_DELIMITER))
 								  .append(afterDeclareFieldsSection);
 
 		this.command = noUniqueCreateTableBuilder.toString();

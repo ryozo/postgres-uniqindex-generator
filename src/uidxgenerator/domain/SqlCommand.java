@@ -2,7 +2,7 @@ package uidxgenerator.domain;
 
 import java.io.Serializable;
 
-import uidxgenerator.util.StringUtil;
+import uidxgenerator.util.StringUtils;
 
 /**
  * SQL文を表すDomainです。
@@ -22,7 +22,7 @@ public class SqlCommand implements Serializable {
 	 * @param type SQLの種別
 	 */
 	public SqlCommand(String command) {
-		if (StringUtil.isNullOrEmpty(command)) {
+		if (StringUtils.isNullOrEmpty(command)) {
 			throw new IllegalArgumentException("sql is empty");
 		}
 		this.command = command;
