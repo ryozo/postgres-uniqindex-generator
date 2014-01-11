@@ -166,7 +166,6 @@ public class SqlUtils {
 			String candidateCreateTable = sql.substring(fromIndex, createTableIndex);
 			manager.append(candidateCreateTable);
 			if (manager.isEffective()) {
-				// CreateTableキーワードを発見
 				return true;
 			}
 			fromIndex = fromIndex + candidateCreateTable.length() + CREATE_TABLE_PREFIX.length();
