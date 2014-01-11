@@ -198,7 +198,41 @@ public class SqlUtils {
 	}
 	
 	/**
-	 * SQL文中に含まれるコメントを取り除く。
+	 * SQL文中に含まれるコメントを取り除く。<br />
+	 * 単一行コメント（"--"から改行文字まで）および複数行コメント("¥/*"から"*¥/"まで)を削除する。<br />
+	 * なお、"--"や"¥/*"といったコメントを表す文言がStringリテラル内で利用されている場合、これをコメントとは判定せず、
+	 * 文言の削除は行わない。
+	 * <pre>
+	 *   [example1]．
+	 *   create table hoge (
+	 *     field1 serial primary key -- comment
+	 *   );
+	 *   ↓
+	 *   create table hoge (
+	 *     field1 serial primary key 
+	 *   );
+	 *   
+	 *   [example2]．
+	 *   create table hoge ( 
+	 *     field1 serial ¥/* comment *¥/ primary key
+	 *   );
+	 *   ↓
+	 *   create table hoge ( 
+	 *     field1 serial  primary key
+	 *   );
+	 *   
+	 *   [ecample3].
+	 *   create table hoge ( 
+	 *     field1 text default('--') unique
+	 *   );
+	 *   ↓
+	 *   create table hoge ( 
+	 *     field1 text default('--') unique
+	 *   );
+	 *   ※ default句内で利用されている'--'はコメント開始文字列であるが、
+	 *     Stringリテラル内（''内）で利用されているため、コメントとは判定されない。
+	 *     このコメント判定はDBMSのコメント判定条件と同様である。
+	 * </pre>
 	 * @param sql 対象のSQL文
 	 * @return コメントが存在しないSQL文
 	 */
@@ -217,7 +251,6 @@ public class SqlUtils {
 			if (isInnerSingleLineCommentFlg) {
 				String lineSeparateStr = null;
 				// ファイル内の改行コードは統一されている前提。
-				// 同一ファイルで改行コード体系が異なるファイルを扱う場合、要修正。
 				int lineSeparatorIndex = currentDecisionStr.indexOf(CR);
 				if (0 <= lineSeparatorIndex) {
 					lineSeparateStr = String.valueOf(CR);
@@ -282,6 +315,7 @@ public class SqlUtils {
 					noCommentSqlBuilder.append(beforeCommentStr);
 					manager.append(beforeCommentStr);
 					if (manager.isEffective()) {
+						// 発見したコメント開始文字列はSQL文法上有意である。（コメント文の開始として有効である）
 						isInnerSingleLineCommentFlg = minimumIndex == startSingleCommentIndex;
 						isInnerMultiLineCommentFlg = minimumIndex == startMultiCommentIndex;
 					} else {
