@@ -159,7 +159,7 @@ public class SqlUtils {
 		SQLStateManager manager = new SQLStateManager();
 		int fromIndex = 0;
 		while (fromIndex < sql.length()) {
-			int createTableIndex = sql.toUpperCase().indexOf(CREATE_TABLE_PREFIX);
+			int createTableIndex = sql.toUpperCase().indexOf(CREATE_TABLE_PREFIX, fromIndex);
 			if (createTableIndex < 0) {
 				break;
 			}
