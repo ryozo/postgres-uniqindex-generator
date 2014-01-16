@@ -27,14 +27,14 @@ public class PostgresCreateIndexBuilder implements ICreateIndexBuilder {
 	private static final String SQL_WHERE = " WHERE ";
 	private static final String SQL_CONDITION = "{FIELD_NAME} = {FIELD_VALUE}";
 	private static final String SQL_AND = "AND";
+	/** デフォルトのIndex名定義 */
+	private static final String DEFAULT_INDEX_NAME = "{TABLE_NAME}_{KEY_LIST}_key";
 	/** 置換文字列 */
 	private static final String REPLACE_STR_INDEX_NAME = "{IDX_NAME}";
 	private static final String REPLACE_STR_TABLE_NAME = "{TABLE_NAME}";
 	private static final String REPLACE_STR_KEY_LIST = "{KEY_LIST}";
 	private static final String REPLACE_STR_FIELD_NAME = "{FIELD_NAME}";
 	private static final String REPLACE_STR_FIELD_VALUE = "{FIELD_VALUE}";
-	/** デフォルトのIndex名定義 */
-	private static final String INDEX_NAME = "{TABLE_NAME}_{FIELD_LIST}_key";
 	
 	/** Index名称 */
 	// TODO index名は指定もできるし、指定しなくてもいい（デフォルト値の設定）する。
@@ -62,7 +62,7 @@ public class PostgresCreateIndexBuilder implements ICreateIndexBuilder {
 	 */
 	@Override
 	public void setIndexFields(String... fields) {
-		if (keyList == null || keyList.length == 0) {
+		if (fields == null || fields.length == 0) {
 			throw new IllegalArgumentException("インデックス付与対象のカラムが指定されていません。");
 		}
 		this.keyList = fields;
@@ -83,6 +83,14 @@ public class PostgresCreateIndexBuilder implements ICreateIndexBuilder {
 
 		conditionMap.put(fieldName, fieldValue);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setIndexName(String name) {
+		this.indexName = name;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -94,18 +102,28 @@ public class PostgresCreateIndexBuilder implements ICreateIndexBuilder {
 			throw new RuntimeException();
 		}
 		StringBuilder sqlBuilder = new StringBuilder();
-		StringBuilder keyListBuilder =new StringBuilder();
-		keyListBuilder.append(keyList[0]);
+		StringBuilder sqlKeyListBuilder = new StringBuilder();
+		StringBuilder indexNameKeyListBuilder = new StringBuilder();
+		sqlKeyListBuilder.append(keyList[0]);
+		indexNameKeyListBuilder.append(keyList[0]);
 		if (keyList.length > 1) {
 			for (int i = 1; i< keyList.length; i++) {
-				keyListBuilder.append(", ");
-				keyListBuilder.append(keyList[i]);
+				sqlKeyListBuilder.append(", ");
+				sqlKeyListBuilder.append(keyList[i]);
+
+				indexNameKeyListBuilder.append("_");
+				indexNameKeyListBuilder.append(keyList[i]);
 			}
+		}
+		if (StringUtils.isNullOrEmpty(indexName)) {
+			indexName = DEFAULT_INDEX_NAME
+					.replace(REPLACE_STR_TABLE_NAME, tableName)
+					.replace(REPLACE_STR_KEY_LIST, indexNameKeyListBuilder.toString());
 		}
 		sqlBuilder.append(
 				SQL_BASE.replace(REPLACE_STR_INDEX_NAME, indexName)
 						.replace(REPLACE_STR_TABLE_NAME, tableName)
-						.replace(REPLACE_STR_KEY_LIST, keyListBuilder.toString()));
+						.replace(REPLACE_STR_KEY_LIST, sqlKeyListBuilder.toString()));
 		
 		if (!conditionMap.isEmpty()) {
 			sqlBuilder.append(SQL_WHERE);

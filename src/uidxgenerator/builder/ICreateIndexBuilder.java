@@ -22,6 +22,12 @@ public interface ICreateIndexBuilder {
 	void setIndexFields(String... fields);
 	
 	/**
+	 * Index名称を設定します。
+	 * @param name Indexの名称
+	 */
+	void setIndexName(String name);
+	
+	/**
 	 * Create Index文に対し、Indexが有効となる条件を追加します。<br />
 	 * 当SQLに対して付与された条件はCreate Index文内のWhere句内に出力されます。
 	 * @param field 条件を設定するフィールド名
