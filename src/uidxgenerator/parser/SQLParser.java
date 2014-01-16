@@ -93,8 +93,8 @@ public class SQLParser {
 							keySet.add(uniqueField.trim());
 						}
 					} else {
-						// 単項目UNIQE フィールド定義部の先頭単語がUNIQUEキー名である
-						keySet.add(fieldDefinition.trim().split(" ")[0]);
+						// 単項目UNIQE コメントを除いたフィールド定義部の先頭単語がUNIQUEキー名である
+						keySet.add(SqlUtils.removeComment(fieldDefinition).trim().split(" ")[0]);
 					}
 					uniqueKeyList.add(keySet);
 				}
