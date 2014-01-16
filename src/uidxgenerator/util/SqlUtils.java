@@ -39,6 +39,7 @@ public class SqlUtils {
 		if (uniqueIndex < 0) {
 			return false;
 		}
+		// TODO 第一引数の文字列長に対する入力チェックが実施できるのでは。
 		Character tab = (char)9;
 		Character space = (char)32;
 		Character leftParentheses = (char)40;
@@ -86,6 +87,7 @@ public class SqlUtils {
 	
 	/**
 	 * CreateTable文のフィールド定義部を個々のフィールド文字列別に分割する。<br />
+	 * SQL文中にコメントが含まれている場合、コメント文の削除は行わない。
 	 * <pre>
 	 * [例]
 	 *   [入力]
@@ -151,6 +153,7 @@ public class SqlUtils {
 	}
 	
 	/**
+	 * TODO 削除？
 	 * 引数のSqlがCreateTable文であるか判定する。
 	 * @param sql 判定対象のSQL文
 	 * @return 判定結果
@@ -220,6 +223,9 @@ public class SqlUtils {
 	 *   create table hoge ( 
 	 *     field1 serial  primary key
 	 *   );
+	 *   ※ コメントが複数行に跨がっていても結果は同様。コメント文中のみ削除される。
+	 *     改行コードはコメント文中内の改行コードのみ削除される。
+	 *     ¥/* - *¥/外の改行コードはそのまま出力される。
 	 *   
 	 *   [ecample3].
 	 *   create table hoge ( 
