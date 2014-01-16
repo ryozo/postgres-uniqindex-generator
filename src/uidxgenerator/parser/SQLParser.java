@@ -1,13 +1,11 @@
 package uidxgenerator.parser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static uidxgenerator.constants.SqlConstants.*;
 import uidxgenerator.analyzer.SqlParenthesesAnalyzer;
@@ -16,9 +14,9 @@ import uidxgenerator.analyzer.SqlParenthesesInfoSet;
 import uidxgenerator.domain.CreateTableSqlCommand;
 import uidxgenerator.domain.EntireSQL;
 import uidxgenerator.domain.SqlCommand;
-import uidxgenerator.util.SqlParenthesesUtil;
-import uidxgenerator.util.SqlUtil;
-import uidxgenerator.util.StringUtil;
+import uidxgenerator.util.SqlParenthesesUtils;
+import uidxgenerator.util.SqlUtils;
+import uidxgenerator.util.StringUtils;
 
 /**
  * SQL文のParserです。<br />
@@ -37,7 +35,7 @@ public class SQLParser {
 	 */
 	public EntireSQL parse(String targetSqlCommands) {
 		EntireSQL entireSQL = new EntireSQL();
-		if (StringUtil.isNullOrEmpty(targetSqlCommands)) {
+		if (StringUtils.isNullOrEmpty(targetSqlCommands)) {
 			return entireSQL;
 		}
 
@@ -57,16 +55,22 @@ public class SQLParser {
 	 * @return 作成したSQLCommand
 	 */
 	private SqlCommand buildSqlCommand(String sql) {
-		if (StringUtil.isNullOrEmpty(sql)) {
+		if (StringUtils.isNullOrEmpty(sql)) {
 			throw new IllegalArgumentException("SQL is null or empty");
 		}
+		
+		String noCommentSql = SqlUtils.removeComment(sql);
+		boolean isCreateTableSql = noCommentSql.trim().startsWith(CREATE_TABLE_PREFIX);
 
 		SqlCommand sqlCommand = null;
-		if (SqlUtil.isCreateTableSql(sql)) {
+		if (isCreateTableSql) {
+			// Table名の取得
+			String tableName = getTableName(noCommentSql);
+			
 			// CreateTable文内に含まれるUniqueキー情報を解析
 			List<Set<String>> uniqueKeyList = new ArrayList<>();
 			
-			List<String> fieldDefinitionList = SqlUtil.decompositionFieldDefinitionPart(sql);
+			List<String> fieldDefinitionList = SqlUtils.decompositionFieldDefinitionPart(sql);
 			for (String fieldDefinition : fieldDefinitionList) {
 				SQLStateManager manager = new SQLStateManager();
 				int uniqueIndex = fieldDefinition.toUpperCase().indexOf(UNIQUE);
@@ -75,21 +79,28 @@ public class SQLParser {
 				}
 				String beforeUniqueString = fieldDefinition.substring(0, uniqueIndex);
 				manager.append(beforeUniqueString);
-				if (manager.isEffective() && SqlUtil.isSqlUniqueKeyword(fieldDefinition, uniqueIndex)) {
+				if (manager.isEffective() && SqlUtils.isSqlUniqueKeyword(fieldDefinition, uniqueIndex)) {
 					// SQL文法上有効なUNIQUEキーワードである。
 					Set<String> keySet = new LinkedHashSet<>();
-					if (SqlUtil.isComplexUniqueConstraint(fieldDefinition, uniqueIndex)) {
+					if (SqlUtils.isComplexUniqueConstraint(fieldDefinition, uniqueIndex)) {
 						// 複合UNIQUE - 括弧内のフィールドすべてを対象とする。
 						SqlParenthesesInfoSet parenthesesInfoSet = SqlParenthesesAnalyzer.analyze(fieldDefinition);
-						SqlParenthesesInfo uniqueFieldsParentheses = SqlParenthesesUtil.getFirstStartParenthesesInfo(parenthesesInfoSet);
-						String innerParentheses = SqlParenthesesUtil.getInsideParenthesesString(fieldDefinition, uniqueFieldsParentheses);
+						SqlParenthesesInfo uniqueFieldsParentheses = SqlParenthesesUtils.getFirstStartParenthesesInfo(parenthesesInfoSet);
+						String innerParentheses = SqlParenthesesUtils.getInsideParenthesesString(fieldDefinition, uniqueFieldsParentheses);
+						String[] uniqueFields = SqlUtils.removeComment(innerParentheses).split(DECLARE_FIELD_DELIMITER);
 						
+						for (String uniqueField : uniqueFields) {
+							keySet.add(uniqueField.trim());
+						}
 					} else {
 						// 単項目UNIQE フィールド定義部の先頭単語がUNIQUEキー名である
 						keySet.add(fieldDefinition.trim().split(" ")[0]);
 					}
+					uniqueKeyList.add(keySet);
 				}
 			}
+			
+			sqlCommand = new CreateTableSqlCommand(sql, tableName, uniqueKeyList);
 			
 		} else {
 			sqlCommand = new SqlCommand(sql);
@@ -287,5 +298,23 @@ public class SQLParser {
 		}
 
 		return sqlCommandList;
+	}
+	
+	/**
+	 * 引数のCreate Table文の作成テーブル名を取得します。<br />
+	 * SQLキーワード[Create Table テーブル名]前にSQLコメント文が存在しない前提とします。
+	 * @param createTableSql 対象とするCreateTable文
+	 * @return Table名
+	 */
+	private String getTableName(String createTableSql) {
+		String behindOfCreateTableStr = createTableSql.substring(
+				createTableSql.toUpperCase().indexOf(CREATE_TABLE_PREFIX) + CREATE_TABLE_PREFIX.length()).trim();
+		Pattern pattern = Pattern.compile("[\\s(]");
+		Matcher matcher = pattern.matcher(behindOfCreateTableStr);
+		if (matcher.find()) {
+			return behindOfCreateTableStr.substring(0, matcher.start());
+		}
+		
+		throw new IllegalArgumentException("SQL文法に誤りがあります");
 	}
 }
