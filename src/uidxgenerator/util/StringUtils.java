@@ -3,7 +3,7 @@ package uidxgenerator.util;
 import java.util.List;
 
 /**
- * String関連のUtilクラスです。
+ * 文字列関連の操作をとりまとめたUtilクラスです。
  * @author W.Ryozo
  * @version 1.0
  */
@@ -19,13 +19,13 @@ public class StringUtils {
 	}
 	
 	/**
-	 * 空白文字(半角、全角スペース、タブ、改行、復帰）をTrimします。
-	 * @param target trim対象の文字列
-	 * @return Trim後文字列
+	 * {@link StringUtils#join(String[], String)}
+	 * @param tokens
+	 * @param delimiter
+	 * @return
 	 */
-	public static String trimWithSpaceString(String target) {
-		// TODO 正規表現のマッチを追加。
-		return target.trim();
+	public static String join(List<String> tokens, String delimiter) {
+		return join(tokens.toArray(new String[0]), delimiter);
 	}
 	
 	/**
@@ -34,7 +34,7 @@ public class StringUtils {
 	 * @param delimiter 連結用文字列
 	 * @return join結果
 	 */
-	public static String join(List<String> tokens, String delimiter) {
+	public static String join(String[] tokens, String delimiter) {
 		if (tokens == null) {
 			return "";
 		}
@@ -43,10 +43,11 @@ public class StringUtils {
 		}
 		
 		StringBuilder resultBuilder = new StringBuilder();
-		for (int i = 0; i < tokens.size(); i++) {
-			resultBuilder.append(tokens.get(i));
-			if (i < tokens.size() - 1) {
+		if (tokens.length > 0) {
+			resultBuilder.append(tokens[0]);
+			for (int i = 1; i < tokens.length; i++) {
 				resultBuilder.append(delimiter);
+				resultBuilder.append(tokens[i]);
 			}
 		}
 		

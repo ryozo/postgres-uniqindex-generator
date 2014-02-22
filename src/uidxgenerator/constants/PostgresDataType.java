@@ -35,7 +35,10 @@ public enum PostgresDataType {
 	private PostgresConditionLiteral literal;
 	private Class<?> dataType;
 	/**
-	 * データ型、およびリテラル形式を設定し、インスタンスを作成します。
+	 * データ型、およびリテラル形式を設定し、インスタンスを作成します。<br />
+	 * データ型は、インスタンスの表すPostgreSQLデータ型をJavaデータ型にマッピングした際に利用するClassを表します。<br />
+	 * また、リテラルは当インスタンスの表すデータ型に対して、SQL上の条件等を指定する場合に利用するリテラル表記を設定します。
+	 * 
 	 * @param dataType 該当データ型のJavaデータ型
 	 * @param literal 該当データ型リテラル
 	 */
@@ -46,6 +49,8 @@ public enum PostgresDataType {
 	
 	/**
 	 * 引数に指定されたオブジェクトがPostgreSQL上でサポートされたJavaデータ型であるかチェックします。<br />
+	 * 当メソッドがFalseを返却する場合、指定されたインスタンスのJavaデータ型はPostgreSQLにマッピングすることはできません。
+	 * 
 	 * @param clazz チェック対象のクラス
 	 * @return チェック結果
 	 */
@@ -63,7 +68,8 @@ public enum PostgresDataType {
 	}
 	
 	/**
-	 * 該当のクラスをSQLの絞り込み条件で使用する場合のリテラルを取得します。
+	 * 引数に受け取ったオブジェクトのクラスをSQLの絞り込み条件で使用する場合のリテラルを取得します。
+	 * 
 	 * @param clazz リテラル取得対象のクラス
 	 * @return リテラル
 	 */

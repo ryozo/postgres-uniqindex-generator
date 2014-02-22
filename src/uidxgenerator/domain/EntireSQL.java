@@ -8,7 +8,6 @@ import java.util.Set;
 
 import uidxgenerator.builder.CreateIndexBuilderFactory;
 import uidxgenerator.builder.ICreateIndexBuilder;
-import uidxgenerator.builder.impl.PostgresCreateIndexBuilder;
 import uidxgenerator.constants.DBMS;
 
 /**

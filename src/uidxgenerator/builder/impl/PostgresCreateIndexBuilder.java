@@ -15,7 +15,6 @@ import uidxgenerator.util.StringUtils;
 
 /**
  * PostgreSQL用のCreateUniqueIndex文Builderです。
- * CreateUniqueIndex文のBuilderです。
  * 
  * @author W.Ryozo
  * @version 1.0
@@ -101,29 +100,17 @@ public class PostgresCreateIndexBuilder implements ICreateIndexBuilder {
 			// TODO Exceptionを定義する。
 			throw new RuntimeException();
 		}
-		StringBuilder sqlBuilder = new StringBuilder();
-		StringBuilder sqlKeyListBuilder = new StringBuilder();
-		StringBuilder indexNameKeyListBuilder = new StringBuilder();
-		sqlKeyListBuilder.append(keyList[0]);
-		indexNameKeyListBuilder.append(keyList[0]);
-		if (keyList.length > 1) {
-			for (int i = 1; i< keyList.length; i++) {
-				sqlKeyListBuilder.append(", ");
-				sqlKeyListBuilder.append(keyList[i]);
-
-				indexNameKeyListBuilder.append("_");
-				indexNameKeyListBuilder.append(keyList[i]);
-			}
-		}
 		if (StringUtils.isNullOrEmpty(indexName)) {
 			indexName = DEFAULT_INDEX_NAME
 					.replace(REPLACE_STR_TABLE_NAME, tableName)
-					.replace(REPLACE_STR_KEY_LIST, indexNameKeyListBuilder.toString());
+					.replace(REPLACE_STR_KEY_LIST, StringUtils.join(keyList, "_"));
 		}
+
+		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append(
 				SQL_BASE.replace(REPLACE_STR_INDEX_NAME, indexName)
 						.replace(REPLACE_STR_TABLE_NAME, tableName)
-						.replace(REPLACE_STR_KEY_LIST, sqlKeyListBuilder.toString()));
+						.replace(REPLACE_STR_KEY_LIST, StringUtils.join(keyList, ", ")));
 		
 		if (!conditionMap.isEmpty()) {
 			sqlBuilder.append(SQL_WHERE);

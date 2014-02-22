@@ -1,6 +1,7 @@
 package uidxgenerator.domain;
 
 import java.io.Serializable;
+import java.lang.annotation.Inherited;
 
 import uidxgenerator.util.StringUtils;
 
@@ -36,6 +37,9 @@ public class SqlCommand implements Serializable {
 		return command;
 	}
 
+	/**
+	 * SQL文そのものを返却します。
+	 */
 	@Override
 	public String toString() {
 		return command;

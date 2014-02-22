@@ -11,7 +11,7 @@ import uidxgenerator.analyzer.SqlParenthesesInfoSet;
 import uidxgenerator.parser.SQLStateManager;
 
 /**
- * SQL関連のUtilクラスです。
+ * SQLに関する操作をとりまとめたのUtilクラスです。
  * @author W.Ryozo
  * @version 1.0
  */

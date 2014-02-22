@@ -1,6 +1,5 @@
 package uidxgenerator.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
