@@ -29,23 +29,23 @@ public class UniqueIndexGenerator {
 	/** デフォルトDBMS */
 	public static final DBMS DEFAULT_DBMS = DBMS.POSTGRESQL;
 
-	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding) {
+	public static void generate(File inputSqlFile, File outputSqlFile, String fileEncoding) {
 		generate(inputSqlFile, outputSqlFile, fileEncoding, DEFAULT_DBMS, DEFAULT_DELFLAG_NAME, Boolean.FALSE);
 	}
 	
-	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, DBMS targetDBMS) {
+	public static void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, DBMS targetDBMS) {
 		generate(inputSqlFile, outputSqlFile, fileEncoding, targetDBMS, DEFAULT_DELFLAG_NAME, Boolean.FALSE);
 	}
 	
-	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, String conditionField, Object conditionValue) {
+	public static void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, String conditionField, Object conditionValue) {
 		generate(inputSqlFile, outputSqlFile, fileEncoding, DEFAULT_DBMS, conditionField, conditionValue);
 	}
 	
-	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, Map<String, Object> conditionMap) {
+	public static void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, Map<String, Object> conditionMap) {
 		generate(inputSqlFile, outputSqlFile, fileEncoding, DEFAULT_DBMS, conditionMap);
 	}
 	
-	public void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, DBMS targetDBMS, String conditionField, Object conditionValue) {
+	public static void generate(File inputSqlFile, File outputSqlFile, String fileEncoding, DBMS targetDBMS, String conditionField, Object conditionValue) {
 		Map<String, Object> conditionMap = new HashMap<>();
 		conditionMap.put(conditionField, conditionValue);
 		generate(inputSqlFile, outputSqlFile, fileEncoding, targetDBMS, conditionMap);
@@ -53,7 +53,7 @@ public class UniqueIndexGenerator {
 	
 	// TODO javadoc
 	// TODO Exceptionの取り扱いを修正
-	public void generate(File inputSqlFile,
+	public static void generate(File inputSqlFile,
 			File outputSqlFile,
 			String fileEncoding,
 			DBMS targetDBMS,
@@ -92,7 +92,7 @@ public class UniqueIndexGenerator {
 	 * @param encoding SQLファイルの文字コード
 	 * @return 読み込んだSQLファイル（改行コード含む）
 	 */
-	private String readSqlFile(File sqlFile, String encoding) throws IOException {
+	private static String readSqlFile(File sqlFile, String encoding) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
 				new FileInputStream(sqlFile), encoding))){
@@ -113,7 +113,7 @@ public class UniqueIndexGenerator {
 	 * @param encoding 出力先ファイルのエンコーディング
 	 * @throws IOException
 	 */
-	private void writeSqlFile(File outputFile, String writeString, String encoding) throws IOException {
+	private static void writeSqlFile(File outputFile, String writeString, String encoding) throws IOException {
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), encoding))) {
 			// TODO　削除
 			System.out.println(writeString);
