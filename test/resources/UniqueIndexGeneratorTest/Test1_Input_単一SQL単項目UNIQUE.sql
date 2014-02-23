@@ -1,0 +1,20 @@
+
+/* Drop Tables */
+
+DROP TABLE IF EXISTS TESTTABLE;
+
+
+
+
+/* Create Tables */
+
+CREATE TABLE TESTTABLE
+(
+	ID serial NOT NULL,
+	VALUE varchar(20),
+	UNIQUEVALUE varchar(10) NOT NULL UNIQUE,
+	PRIMARY KEY (ID)
+) WITHOUT OIDS;
+
+
+
